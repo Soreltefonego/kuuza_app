@@ -35,9 +35,26 @@ export async function POST(request: NextRequest) {
 
     const result = await ManagerService.creditClient(user.managerId, data)
 
+    // Convert all BigInt values to numbers for JSON response
+    const newBalance = Number(result.newBalance)
+    const serializedResult = {
+      ...result,
+      client: {
+        ...result.client,
+        accountBalance: Number(result.client.accountBalance)
+      },
+      transaction: {
+        ...result.transaction,
+        amount: Number(result.transaction.amount)
+      },
+      newBalance: newBalance
+    }
+
     return NextResponse.json({
       success: true,
-      data: result,
+      message: `Client crédité avec succès! Nouveau solde: ${newBalance} XAF`,
+      data: serializedResult,
+      newBalance: newBalance
     })
 
   } catch (error) {

@@ -39,14 +39,13 @@ export function QuickActions() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="col-span-1 md:col-span-2 lg:col-span-3"
     >
-      <Card className="glass border-white/10 h-full">
-        <CardHeader>
-          <CardTitle className="text-sm font-medium">Actions rapides</CardTitle>
+      <Card className="glass border-white/10">
+        <CardHeader className="pb-2 md:pb-3">
+          <CardTitle className="text-xs md:text-sm font-medium">Actions rapides</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <CardContent className="space-y-2 md:space-y-3 pt-0">
+          <div className="grid grid-cols-2 gap-1.5 md:gap-2">
             {actions.map((action, index) => {
               const Icon = action.icon
               return (
@@ -59,12 +58,12 @@ export function QuickActions() {
                   <Link href={action.href}>
                     <Button
                       variant="outline"
-                      className="w-full h-20 flex-col gap-2 glass-hover border-white/10"
+                      className="w-full h-12 md:h-14 flex-col gap-1 glass-hover border-white/10 text-xs"
                     >
-                      <div className={`p-2 rounded-lg bg-gradient-to-r ${action.color}`}>
-                        <Icon className="h-4 w-4 text-white" />
+                      <div className={`p-1 md:p-1.5 rounded-lg bg-gradient-to-r ${action.color}`}>
+                        <Icon className="h-2.5 w-2.5 md:h-3 md:w-3 text-white" />
                       </div>
-                      <span className="text-xs">{action.label}</span>
+                      <span className="text-[9px] md:text-[10px] leading-tight">{action.label}</span>
                     </Button>
                   </Link>
                 </motion.div>

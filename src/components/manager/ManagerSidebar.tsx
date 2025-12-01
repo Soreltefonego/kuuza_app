@@ -13,7 +13,7 @@ import {
   Wallet,
   TrendingUp
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, formatCurrency } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { SessionUser } from '@/types'
@@ -27,9 +27,10 @@ const menuItems = [
 
 interface ManagerSidebarProps {
   user: SessionUser
+  creditBalance?: number
 }
 
-export function ManagerSidebar({ user }: ManagerSidebarProps) {
+export function ManagerSidebar({ user, creditBalance = 0 }: ManagerSidebarProps) {
   const pathname = usePathname()
 
   return (
@@ -107,7 +108,7 @@ export function ManagerSidebar({ user }: ManagerSidebarProps) {
             <Wallet className="h-4 w-4 text-primary" />
           </div>
           <p className="text-2xl font-bold text-gradient">
-            0 XAF
+            {formatCurrency(creditBalance)}
           </p>
         </motion.div>
       </div>

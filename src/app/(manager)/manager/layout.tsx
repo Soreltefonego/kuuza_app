@@ -38,7 +38,7 @@ export default async function ManagerLayout({
     <div className="flex h-screen">
       {/* Desktop Sidebar */}
       <div className="hidden md:block">
-        <ManagerSidebar user={user} />
+        <ManagerSidebar user={user} creditBalance={Number(creditBalance)} />
       </div>
 
       {/* Mobile Navigation */}
@@ -46,7 +46,7 @@ export default async function ManagerLayout({
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
-        <div className="container mx-auto px-4 md:px-6 pt-16 md:pt-6">
+        <div className="container mx-auto px-3 md:px-6 pt-4 md:pt-6 pb-20 md:pb-6">
           {children}
         </div>
       </main>

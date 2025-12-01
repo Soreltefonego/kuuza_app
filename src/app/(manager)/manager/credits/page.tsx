@@ -5,6 +5,10 @@ import { ManagerService } from "@/services/manager.service"
 import { CreditsPageContent } from "@/components/manager/CreditsPageContent"
 import { SessionUser } from "@/types"
 
+// Disable caching to ensure fresh data
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function CreditsPage() {
   const session = await getServerSession(authOptions)
 

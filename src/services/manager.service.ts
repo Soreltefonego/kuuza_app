@@ -7,41 +7,49 @@ import bcrypt from 'bcryptjs'
 export class ManagerService {
   static async getManagerStats(managerId: string) {
     try {
-      // Get manager
-      const manager = await prisma.manager.findUnique({
-        where: { id: managerId }
-      })
+      // Get manager with retry logic
+      const manager = await this.retryOperation(() =>
+        prisma.manager.findUnique({
+          where: { id: managerId }
+        })
+      )
 
       if (!manager) {
         throw new Error('Manager not found')
       }
 
-      // Get client counts
+      // Get client counts with retry logic
       const [clientCount, activeClients] = await Promise.all([
-        prisma.client.count({
-          where: { managerId }
-        }),
-        prisma.client.count({
-          where: {
-            managerId,
-            isActivated: true
-          }
-        })
+        this.retryOperation(() =>
+          prisma.client.count({
+            where: { managerId }
+          })
+        ),
+        this.retryOperation(() =>
+          prisma.client.count({
+            where: {
+              managerId,
+              isActivated: true
+            }
+          })
+        )
       ])
 
-      // Get volume from successful transactions
-      const totalVolume = await prisma.transaction.aggregate({
-        where: {
-          OR: [
-            { fromUser: { manager: { id: managerId } } },
-            { toUser: { client: { managerId } } }
-          ],
-          status: TransactionStatus.SUCCESS
-        },
-        _sum: {
-          amount: true
-        }
-      })
+      // Get volume from successful transactions with retry logic
+      const totalVolume = await this.retryOperation(() =>
+        prisma.transaction.aggregate({
+          where: {
+            OR: [
+              { fromUser: { manager: { id: managerId } } },
+              { toUser: { client: { managerId } } }
+            ],
+            status: TransactionStatus.SUCCESS
+          },
+          _sum: {
+            amount: true
+          }
+        })
+      )
 
       return {
         creditBalance: manager.creditBalance,
@@ -53,6 +61,27 @@ export class ManagerService {
       console.error('Error getting manager stats:', error)
       throw error
     }
+  }
+
+  // Helper method for retry logic
+  private static async retryOperation<T>(operation: () => Promise<T>, maxRetries = 3): Promise<T> {
+    let lastError: Error | undefined
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        return await operation()
+      } catch (error) {
+        lastError = error as Error
+        console.warn(`Attempt ${attempt}/${maxRetries} failed:`, error)
+
+        if (attempt < maxRetries) {
+          // Exponential backoff: 100ms, 200ms, 400ms
+          await new Promise(resolve => setTimeout(resolve, 100 * Math.pow(2, attempt - 1)))
+        }
+      }
+    }
+
+    throw lastError || new Error('Operation failed after retries')
   }
 
   static async createClient(managerId: string, data: CreateClientInput) {
@@ -147,7 +176,7 @@ export class ManagerService {
       })
 
       // Update client account balance
-      await tx.client.update({
+      const updatedClient = await tx.client.update({
         where: { id: data.clientId },
         data: {
           accountBalance: {
@@ -169,7 +198,11 @@ export class ManagerService {
         },
       })
 
-      return { transaction, client }
+      return {
+        transaction,
+        client: updatedClient,
+        newBalance: Number(updatedClient.accountBalance)
+      }
     })
   }
 
@@ -226,45 +259,51 @@ export class ManagerService {
 
   static async getClients(managerId: string) {
     try {
-      const clients = await prisma.client.findMany({
-        where: { managerId },
-        include: {
-          user: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      })
+      const clients = await this.retryOperation(() =>
+        prisma.client.findMany({
+          where: { managerId },
+          include: {
+            user: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        })
+      )
 
       return clients
     } catch (error) {
       console.error('Error fetching clients:', error)
+      // Return empty array
       return []
     }
   }
 
   static async getTransactions(managerId: string, limit = 50) {
     try {
-      const transactions = await prisma.transaction.findMany({
-        where: {
-          OR: [
-            { fromUser: { manager: { id: managerId } } },
-            { toUser: { client: { managerId } } },
-          ],
-        },
-        include: {
-          fromUser: true,
-          toUser: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-        take: limit,
-      })
+      const transactions = await this.retryOperation(() =>
+        prisma.transaction.findMany({
+          where: {
+            OR: [
+              { fromUser: { manager: { id: managerId } } },
+              { toUser: { client: { managerId } } },
+            ],
+          },
+          include: {
+            fromUser: true,
+            toUser: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: limit,
+        })
+      )
 
       return transactions
     } catch (error) {
       console.error('Error fetching transactions:', error)
+      // Return empty array
       return []
     }
   }

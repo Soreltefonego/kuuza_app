@@ -26,7 +26,7 @@ import { Badge } from '@/components/ui/badge'
 import { UserPlus, Send, Search, User, Mail, Phone, Calendar, CreditCard, Copy, CheckCircle, Link } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
-import { toast } from 'react-hot-toast'
+import { toast } from 'sonner'
 
 interface ClientsPageContentProps {
   clients: any[]
@@ -106,28 +106,30 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
       })
 
       if (response.ok) {
-        toast.success('Client crédité avec succès')
+        const result = await response.json()
+        toast.success(result.message || 'Client crédité avec succès!')
         setCreditDialogOpen(false)
         setCreditAmount('')
         setSelectedClient(null)
         router.refresh()
       } else {
         const error = await response.json()
-        toast.error(error.message || 'Erreur lors du crédit')
+        toast.error(error.error || 'Erreur lors du crédit')
       }
     } catch (error) {
-      toast.error('Erreur lors du crédit')
+      console.error('Erreur lors du crédit:', error)
+      toast.error('Erreur réseau lors du crédit')
     }
     setIsLoading(false)
   }
 
   return (
-    <div className="space-y-6 p-4 md:p-6">
+    <div className="space-y-4 md:space-y-6 p-3 md:p-6">
       {/* Header with actions - Mobile optimized */}
-      <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+      <div className="flex flex-col sm:flex-row gap-3 md:gap-4 sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gradient">Mes Clients</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gradient">Mes Clients</h1>
+          <p className="text-xs md:text-sm text-muted-foreground mt-1">
             Gérez vos clients et leurs comptes
           </p>
         </div>
@@ -250,7 +252,7 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
       </div>
 
       {/* Clients Grid - Responsive */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         {filteredClients.map((client, index) => (
           <motion.div
             key={client.id}
@@ -259,54 +261,54 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
             transition={{ delay: index * 0.05 }}
           >
             <Card className="glass border-white/10 hover:border-white/20 transition-all">
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-2 md:pb-3">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-gradient-to-r from-violet-500 to-purple-500">
-                      <User className="h-4 w-4 text-white" />
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <div className="p-1.5 md:p-2 rounded-full bg-gradient-to-r from-violet-500 to-purple-500">
+                      <User className="h-3 w-3 md:h-4 md:w-4 text-white" />
                     </div>
                     <div>
-                      <CardTitle className="text-base">
+                      <CardTitle className="text-sm md:text-base">
                         {client.user.firstName} {client.user.lastName}
                       </CardTitle>
-                      <Badge variant={client.isActivated ? 'default' : 'secondary'} className="mt-1">
+                      <Badge variant={client.isActivated ? 'default' : 'secondary'} className="mt-1 text-[10px] md:text-xs">
                         {client.isActivated ? 'Actif' : 'Inactif'}
                       </Badge>
                     </div>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-2 md:space-y-3 pt-0">
                 {/* Contact Info */}
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-xs sm:text-sm truncate">{client.user.email}</span>
+                <div className="space-y-1.5 md:space-y-2 text-sm">
+                  <div className="flex items-center gap-1.5 md:gap-2">
+                    <Mail className="h-2.5 w-2.5 md:h-3 md:w-3 text-muted-foreground" />
+                    <span className="text-[10px] md:text-xs truncate">{client.user.email}</span>
                   </div>
                   {client.user.phone && (
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-xs sm:text-sm">{client.user.phone}</span>
+                    <div className="flex items-center gap-1.5 md:gap-2">
+                      <Phone className="h-2.5 w-2.5 md:h-3 md:w-3 text-muted-foreground" />
+                      <span className="text-[10px] md:text-xs">{client.user.phone}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-xs sm:text-sm">Créé le {formatDate(client.createdAt)}</span>
+                  <div className="flex items-center gap-1.5 md:gap-2">
+                    <Calendar className="h-2.5 w-2.5 md:h-3 md:w-3 text-muted-foreground" />
+                    <span className="text-[10px] md:text-xs">Créé le {formatDate(client.createdAt)}</span>
                   </div>
                 </div>
 
                 {/* Balance */}
-                <div className="pt-3 border-t border-white/10">
+                <div className="pt-2 md:pt-3 border-t border-white/10">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Solde</span>
-                    <span className="text-lg font-bold text-gradient">
+                    <span className="text-[10px] md:text-xs text-muted-foreground">Solde</span>
+                    <span className="text-sm md:text-lg font-bold text-gradient">
                       {formatCurrency(Number(client.accountBalance))}
                     </span>
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2">
+                <div className="flex gap-1.5 md:gap-2">
                   {!client.isActivated && client.activationToken && (
                     <Button
                       onClick={() => {
@@ -315,11 +317,11 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
                         toast.success('Lien d\'activation copié!')
                       }}
                       variant="outline"
-                      className="flex-1"
+                      className="flex-1 h-8 md:h-9"
                       size="sm"
                     >
-                      <Link className="h-3 w-3 mr-2" />
-                      Copier lien
+                      <Link className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1 md:mr-2" />
+                      <span className="text-[10px] md:text-xs">Copier lien</span>
                     </Button>
                   )}
                   <Button
@@ -327,11 +329,11 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
                       setSelectedClient(client)
                       setCreditDialogOpen(true)
                     }}
-                    className={client.isActivated ? "w-full gradient-primary" : "flex-1 gradient-primary"}
+                    className={client.isActivated ? "w-full gradient-primary h-8 md:h-9" : "flex-1 gradient-primary h-8 md:h-9"}
                     size="sm"
                   >
-                    <Send className="h-3 w-3 mr-2" />
-                    Créditer
+                    <Send className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1 md:mr-2" />
+                    <span className="text-[10px] md:text-xs">Créditer</span>
                   </Button>
                 </div>
               </CardContent>

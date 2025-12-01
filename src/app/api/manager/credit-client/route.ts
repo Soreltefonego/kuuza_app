@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { ManagerService } from '@/services/manager.service'
 import { creditClientSchema } from '@/lib/validations'
+import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { SessionUser } from '@/types'
 
@@ -40,6 +41,12 @@ export async function POST(request: NextRequest) {
       user.managerId,
       data
     )
+
+    // Invalidate relevant cache paths to force fresh data
+    revalidatePath('/manager/dashboard', 'page')
+    revalidatePath('/manager/clients', 'page')
+    revalidatePath('/manager/transactions', 'page')
+    revalidatePath('/(manager)', 'layout')
 
     // Sérialiser les BigInt avant de retourner la réponse
     const serializedResult = {
