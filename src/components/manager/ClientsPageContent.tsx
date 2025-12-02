@@ -53,6 +53,11 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
   })
 
   const [creditAmount, setCreditAmount] = useState('')
+  const [creditData, setCreditData] = useState({
+    amount: '',
+    senderName: '',
+    description: ''
+  })
 
   const filteredClients = clients.filter(client =>
     client.user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -92,7 +97,7 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
   }
 
   const handleCreditClient = async () => {
-    if (!selectedClient || !creditAmount) return
+    if (!selectedClient || !creditData.amount) return
 
     setIsLoading(true)
     try {
@@ -101,7 +106,9 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           clientId: selectedClient.id,
-          amount: parseFloat(creditAmount),
+          amount: parseFloat(creditData.amount),
+          senderName: creditData.senderName || 'Kuuza Bank',
+          description: creditData.description || 'Virement bancaire',
         }),
       })
 
@@ -109,6 +116,7 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
         const result = await response.json()
         toast.success(result.message || 'Client crédité avec succès!')
         setCreditDialogOpen(false)
+        setCreditData({ amount: '', senderName: '', description: '' })
         setCreditAmount('')
         setSelectedClient(null)
         router.refresh()
@@ -217,14 +225,39 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="amount">Montant (FCFA)</Label>
+                  <Label htmlFor="amount">Montant (USD)</Label>
                   <Input
                     id="amount"
                     type="number"
-                    value={creditAmount}
-                    onChange={(e) => setCreditAmount(e.target.value)}
-                    placeholder="10000"
+                    value={creditData.amount}
+                    onChange={(e) => setCreditData({ ...creditData, amount: e.target.value })}
+                    placeholder="1000"
+                    required
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="senderName">Nom de l'expéditeur (optionnel)</Label>
+                  <Input
+                    id="senderName"
+                    value={creditData.senderName}
+                    onChange={(e) => setCreditData({ ...creditData, senderName: e.target.value })}
+                    placeholder="Ex: Société ABC, John Doe..."
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Laissez vide pour afficher "Kuuza Bank"
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description">Motif du virement (optionnel)</Label>
+                  <Input
+                    id="description"
+                    value={creditData.description}
+                    onChange={(e) => setCreditData({ ...creditData, description: e.target.value })}
+                    placeholder="Ex: Salaire, Remboursement, Paiement facture..."
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Ce motif sera visible dans l'historique du client
+                  </p>
                 </div>
               </div>
               <DialogFooter className="flex-col sm:flex-row gap-2">

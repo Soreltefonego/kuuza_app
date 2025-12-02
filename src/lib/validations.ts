@@ -27,6 +27,8 @@ export const createClientSchema = z.object({
 export const creditClientSchema = z.object({
   clientId: z.string().cuid('Client invalide'),
   amount: z.number().positive('Le montant doit être positif'),
+  senderName: z.string().optional(),
+  description: z.string().optional(),
 })
 
 export const buyCreditsSchema = z.object({

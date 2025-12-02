@@ -8,6 +8,8 @@ import { SessionUser } from '@/types'
 const creditClientSchema = z.object({
   clientId: z.string().min(1, 'Client ID requis'),
   amount: z.number().positive('Le montant doit être positif'),
+  senderName: z.string().optional(),
+  description: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {

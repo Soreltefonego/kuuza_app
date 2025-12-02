@@ -185,16 +185,19 @@ export class ManagerService {
         },
       })
 
-      // Create transaction record
+      // Create transaction record with metadata
       const transaction = await tx.transaction.create({
         data: {
           type: TransactionType.CREDIT,
           amount: amountInCents,
           fromUserId: manager.userId,
           toUserId: client.userId,
-          description: `Crédit de compte client`,
+          description: data.description || `Crédit de compte client`,
           status: TransactionStatus.SUCCESS,
           reference: generateTransactionReference(),
+          metadata: data.senderName ? {
+            senderName: data.senderName
+          } : undefined,
         },
       })
 
