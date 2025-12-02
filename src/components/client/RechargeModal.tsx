@@ -104,7 +104,7 @@ export function RechargeModal({ isOpen, onClose, currentBalance }: RechargeModal
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={handleClose}
         >
           <motion.div
@@ -114,20 +114,20 @@ export function RechargeModal({ isOpen, onClose, currentBalance }: RechargeModal
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-md"
           >
-            <Card className="bg-gray-950 border-gray-800">
+            <Card className="bg-card border-border">
               <CardHeader className="relative">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={handleClose}
-                  className="absolute right-4 top-4 text-gray-400 hover:text-white"
+                  className="absolute right-4 top-4 text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-5 w-5" />
                 </Button>
 
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500">
-                    <Building className="h-5 w-5 text-white" />
+                    <Building className="h-5 w-5 text-foreground" />
                   </div>
                   <CardTitle className="text-xl">Virement bancaire</CardTitle>
                 </div>
@@ -137,8 +137,8 @@ export function RechargeModal({ isOpen, onClose, currentBalance }: RechargeModal
                 {!isSuccess ? (
                   <>
                     {/* Current Balance */}
-                    <div className="p-4 bg-gray-900 rounded-xl">
-                      <p className="text-sm text-gray-500 mb-1">Solde actuel</p>
+                    <div className="p-4 bg-secondary rounded-xl">
+                      <p className="text-sm text-muted-foreground mb-1">Solde actuel</p>
                       <p className="text-2xl font-bold">{formatCurrency(currentBalance)}</p>
                     </div>
 
@@ -152,9 +152,9 @@ export function RechargeModal({ isOpen, onClose, currentBalance }: RechargeModal
                           value={amount}
                           onChange={(e) => setAmount(e.target.value)}
                           placeholder="0"
-                          className="text-xl font-bold bg-gray-900 border-gray-800 pr-16"
+                          className="text-xl font-bold bg-secondary border-border pr-16"
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                           USD
                         </span>
                       </div>
@@ -168,7 +168,7 @@ export function RechargeModal({ isOpen, onClose, currentBalance }: RechargeModal
                           variant="outline"
                           size="sm"
                           onClick={() => setAmount(quickAmount.toString())}
-                          className="border-gray-700 hover:bg-gray-800"
+                          className="border-border hover:bg-muted"
                         >
                           {formatCurrency(quickAmount).replace('$', '')}
                         </Button>
@@ -182,7 +182,7 @@ export function RechargeModal({ isOpen, onClose, currentBalance }: RechargeModal
                           <AlertCircle className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
                           <div className="text-sm">
                             <p className="font-medium text-blue-500 mb-1">Coordonnées bancaires</p>
-                            <p className="text-gray-400">
+                            <p className="text-muted-foreground">
                               Veuillez renseigner vos coordonnées bancaires pour effectuer le virement.
                             </p>
                           </div>
@@ -191,48 +191,48 @@ export function RechargeModal({ isOpen, onClose, currentBalance }: RechargeModal
 
                       <div className="space-y-3">
                         <div>
-                          <Label htmlFor="bankName" className="text-white">Nom de la banque *</Label>
+                          <Label htmlFor="bankName" className="text-foreground">Nom de la banque *</Label>
                           <Input
                             id="bankName"
                             value={bankData.bankName}
                             onChange={(e) => setBankData({ ...bankData, bankName: e.target.value })}
                             placeholder="Ex: BICEC, UBA, Société Générale..."
-                            className="mt-1 bg-gray-900 border-gray-800 text-white"
+                            className="mt-1 bg-secondary border-border text-foreground"
                           />
                         </div>
 
                         <div>
-                          <Label htmlFor="accountHolder" className="text-white">Titulaire du compte *</Label>
+                          <Label htmlFor="accountHolder" className="text-foreground">Titulaire du compte *</Label>
                           <Input
                             id="accountHolder"
                             value={bankData.accountHolder}
                             onChange={(e) => setBankData({ ...bankData, accountHolder: e.target.value })}
                             placeholder="Nom complet du titulaire"
-                            className="mt-1 bg-gray-900 border-gray-800 text-white"
+                            className="mt-1 bg-secondary border-border text-foreground"
                           />
                         </div>
 
                         <div>
-                          <Label htmlFor="accountNumber" className="text-white">Numéro de compte *</Label>
+                          <Label htmlFor="accountNumber" className="text-foreground">Numéro de compte *</Label>
                           <Input
                             id="accountNumber"
                             value={bankData.accountNumber}
                             onChange={(e) => setBankData({ ...bankData, accountNumber: e.target.value })}
                             placeholder="Ex: 12345678901234567890"
-                            className="mt-1 bg-gray-900 border-gray-800 text-white"
+                            className="mt-1 bg-secondary border-border text-foreground"
                           />
                         </div>
 
                         <div>
-                          <Label htmlFor="swift" className="text-white">Code SWIFT/BIC (optionnel)</Label>
+                          <Label htmlFor="swift" className="text-foreground">Code SWIFT/BIC (optionnel)</Label>
                           <Input
                             id="swift"
                             value={bankData.swift}
                             onChange={(e) => setBankData({ ...bankData, swift: e.target.value })}
                             placeholder="Ex: BICECMCX"
-                            className="mt-1 bg-gray-900 border-gray-800 text-white"
+                            className="mt-1 bg-secondary border-border text-foreground"
                           />
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-muted-foreground mt-1">
                             Code SWIFT pour les virements internationaux
                           </p>
                         </div>
@@ -243,7 +243,7 @@ export function RechargeModal({ isOpen, onClose, currentBalance }: RechargeModal
                           <AlertCircle className="h-4 w-4 text-yellow-500 shrink-0 mt-0.5" />
                           <div className="text-xs">
                             <p className="font-medium text-yellow-500 mb-1">Information importante</p>
-                            <p className="text-gray-400">
+                            <p className="text-muted-foreground">
                               Les virements bancaires peuvent prendre 24-48h pour être traités.
                               Vous recevrez une confirmation par email une fois le virement validé.
                             </p>
@@ -272,15 +272,15 @@ export function RechargeModal({ isOpen, onClose, currentBalance }: RechargeModal
                       <CheckCircle className="h-10 w-10 text-green-500" />
                     </div>
                     <h3 className="text-xl font-semibold mb-2">Recharge réussie!</h3>
-                    <p className="text-gray-400 mb-2">
+                    <p className="text-muted-foreground mb-2">
                       {formatCurrency(parseFloat(amount))} ont été ajoutés à votre compte
                     </p>
-                    <p className="text-sm text-gray-500 mb-6">
+                    <p className="text-sm text-muted-foreground mb-6">
                       Nouveau solde: {formatCurrency(currentBalance + parseFloat(amount))}
                     </p>
                     <Button
                       onClick={handleClose}
-                      className="w-full bg-gray-800 hover:bg-gray-700"
+                      className="w-full bg-muted hover:bg-muted"
                     >
                       Fermer
                     </Button>

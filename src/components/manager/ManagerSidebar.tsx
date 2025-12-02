@@ -17,6 +17,7 @@ import { cn, formatCurrency } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { SessionUser } from '@/types'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 const menuItems = [
   { href: '/manager/dashboard', icon: LayoutDashboard, label: 'Tableau de bord' },
@@ -53,6 +54,7 @@ export function ManagerSidebar({ user, creditBalance = 0 }: ManagerSidebarProps)
           </p>
           <p className="text-xs text-muted-foreground truncate">Manager</p>
         </div>
+        <ThemeToggle />
       </div>
 
       <div className="flex-1 px-3 py-4">

@@ -94,8 +94,8 @@ export function CardsView({ client }: CardsViewProps) {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl lg:text-2xl font-bold mb-2 text-white">Mes Cartes</h2>
-          <p className="text-sm lg:text-base text-gray-300">Gérez vos cartes bancaires</p>
+          <h2 className="text-xl lg:text-2xl font-bold mb-2 text-foreground">Mes Cartes</h2>
+          <p className="text-sm lg:text-base text-muted-foreground">Gérez vos cartes bancaires</p>
         </div>
         <Button
           onClick={() => toast('Demande de nouvelle carte bientôt disponible')}
@@ -115,7 +115,7 @@ export function CardsView({ client }: CardsViewProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
           >
-            <Card className="bg-gray-950 border-gray-800 overflow-hidden">
+            <Card className="bg-card border-border overflow-hidden">
               {/* Card Visual */}
               <div className={`relative h-48 lg:h-56 bg-gradient-to-br ${card.color} p-4 lg:p-6 rounded-t-lg`}>
                 <div className="absolute top-4 right-4">
@@ -129,15 +129,15 @@ export function CardsView({ client }: CardsViewProps) {
 
                 <div className="flex justify-between items-start mb-6 lg:mb-8">
                   <div>
-                    <p className="text-white/70 text-xs lg:text-sm">{card.name}</p>
-                    <p className="text-white font-semibold text-base lg:text-lg mt-1">{card.type.toUpperCase()}</p>
+                    <p className="text-foreground/70 text-xs lg:text-sm">{card.name}</p>
+                    <p className="text-foreground font-semibold text-base lg:text-lg mt-1">{card.type.toUpperCase()}</p>
                   </div>
-                  <Wifi className="h-6 w-6 lg:h-8 lg:w-8 text-white rotate-90" />
+                  <Wifi className="h-6 w-6 lg:h-8 lg:w-8 text-foreground rotate-90" />
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <p className="text-white font-mono text-sm lg:text-lg tracking-wider">
+                    <p className="text-foreground font-mono text-sm lg:text-lg tracking-wider">
                       {showCardNumber[card.id] ? card.number : maskCardNumber(card.number)}
                     </p>
                     <Button
@@ -147,7 +147,7 @@ export function CardsView({ client }: CardsViewProps) {
                         ...showCardNumber,
                         [card.id]: !showCardNumber[card.id]
                       })}
-                      className="h-5 w-5 lg:h-6 lg:w-6 text-white/70 hover:text-white"
+                      className="h-5 w-5 lg:h-6 lg:w-6 text-foreground/70 hover:text-foreground"
                     >
                       {showCardNumber[card.id] ? <EyeOff className="h-3 w-3 lg:h-4 lg:w-4" /> : <Eye className="h-3 w-3 lg:h-4 lg:w-4" />}
                     </Button>
@@ -155,7 +155,7 @@ export function CardsView({ client }: CardsViewProps) {
                       variant="ghost"
                       size="icon"
                       onClick={() => handleCopyCardNumber(card.number)}
-                      className="h-5 w-5 lg:h-6 lg:w-6 text-white/70 hover:text-white"
+                      className="h-5 w-5 lg:h-6 lg:w-6 text-foreground/70 hover:text-foreground"
                     >
                       <Copy className="h-3 w-3 lg:h-4 lg:w-4" />
                     </Button>
@@ -163,12 +163,12 @@ export function CardsView({ client }: CardsViewProps) {
 
                   <div className="flex justify-between items-end">
                     <div>
-                      <p className="text-white/70 text-xs">Titulaire</p>
-                      <p className="text-white text-xs lg:text-sm uppercase">{card.holder}</p>
+                      <p className="text-foreground/70 text-xs">Titulaire</p>
+                      <p className="text-foreground text-xs lg:text-sm uppercase">{card.holder}</p>
                     </div>
                     <div>
-                      <p className="text-white/70 text-xs">Expire</p>
-                      <p className="text-white text-xs lg:text-sm">{card.expiry}</p>
+                      <p className="text-foreground/70 text-xs">Expire</p>
+                      <p className="text-foreground text-xs lg:text-sm">{card.expiry}</p>
                     </div>
                   </div>
                 </div>
@@ -178,8 +178,8 @@ export function CardsView({ client }: CardsViewProps) {
               <CardContent className="p-3 lg:p-4">
                 <div className="flex justify-between items-center mb-3 lg:mb-4">
                   <div>
-                    <p className="text-xs lg:text-sm text-gray-300">Plafond disponible</p>
-                    <p className="text-lg lg:text-xl font-bold text-white">{formatCurrency(card.balance)}</p>
+                    <p className="text-xs lg:text-sm text-muted-foreground">Plafond disponible</p>
+                    <p className="text-lg lg:text-xl font-bold text-foreground">{formatCurrency(card.balance)}</p>
                   </div>
                   <Button
                     variant="ghost"
@@ -193,7 +193,7 @@ export function CardsView({ client }: CardsViewProps) {
                 {/* Features */}
                 <div className="flex flex-wrap gap-1 lg:gap-2 mb-3 lg:mb-4">
                   {card.features.map((feature) => (
-                    <Badge key={feature} variant="secondary" className="bg-gray-800 text-xs">
+                    <Badge key={feature} variant="secondary" className="bg-muted text-xs">
                       {feature}
                     </Badge>
                   ))}
@@ -251,20 +251,20 @@ export function CardsView({ client }: CardsViewProps) {
       </div>
 
       {/* Card Settings */}
-      <Card className="bg-gray-950 border-gray-800">
+      <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-base lg:text-lg text-white">Paramètres des cartes</CardTitle>
+          <CardTitle className="text-base lg:text-lg text-foreground">Paramètres des cartes</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 lg:space-y-3">
           <button
             onClick={() => toast('Gestion des paiements en ligne bientôt disponible')}
-            className="w-full flex items-center justify-between p-2 lg:p-3 bg-gray-900 hover:bg-gray-800 rounded-lg transition-colors"
+            className="w-full flex items-center justify-between p-2 lg:p-3 bg-secondary hover:bg-muted rounded-lg transition-colors"
           >
             <div className="flex items-center gap-2 lg:gap-3">
-              <Globe className="h-4 w-4 lg:h-5 lg:w-5 text-gray-400" />
+              <Globe className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />
               <div className="text-left">
                 <p className="font-medium text-sm lg:text-base">Paiements en ligne</p>
-                <p className="text-xs text-gray-300">Autorisez les achats sur internet</p>
+                <p className="text-xs text-muted-foreground">Autorisez les achats sur internet</p>
               </div>
             </div>
             <Badge variant="default" className="bg-green-600 text-xs">Activé</Badge>
@@ -272,13 +272,13 @@ export function CardsView({ client }: CardsViewProps) {
 
           <button
             onClick={() => toast('Gestion des paiements sans contact bientôt disponible')}
-            className="w-full flex items-center justify-between p-3 bg-gray-900 hover:bg-gray-800 rounded-lg transition-colors"
+            className="w-full flex items-center justify-between p-3 bg-secondary hover:bg-muted rounded-lg transition-colors"
           >
             <div className="flex items-center gap-3">
-              <Wifi className="h-5 w-5 text-gray-400" />
+              <Wifi className="h-5 w-5 text-muted-foreground" />
               <div className="text-left">
                 <p className="font-medium">Paiements sans contact</p>
-                <p className="text-xs text-gray-300">Payez rapidement avec le NFC</p>
+                <p className="text-xs text-muted-foreground">Payez rapidement avec le NFC</p>
               </div>
             </div>
             <Badge variant="default" className="bg-green-600">Activé</Badge>
@@ -286,13 +286,13 @@ export function CardsView({ client }: CardsViewProps) {
 
           <button
             onClick={() => toast('Gestion des paiements à l\'étranger bientôt disponible')}
-            className="w-full flex items-center justify-between p-2 lg:p-3 bg-gray-900 hover:bg-gray-800 rounded-lg transition-colors"
+            className="w-full flex items-center justify-between p-2 lg:p-3 bg-secondary hover:bg-muted rounded-lg transition-colors"
           >
             <div className="flex items-center gap-2 lg:gap-3">
-              <Globe className="h-4 w-4 lg:h-5 lg:w-5 text-gray-400" />
+              <Globe className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />
               <div className="text-left">
                 <p className="font-medium text-sm lg:text-base">Paiements à l'étranger</p>
-                <p className="text-xs text-gray-300">Utilisez vos cartes à l'international</p>
+                <p className="text-xs text-muted-foreground">Utilisez vos cartes à l'international</p>
               </div>
             </div>
             <Badge variant="secondary" className="text-xs">Désactivé</Badge>
@@ -300,13 +300,13 @@ export function CardsView({ client }: CardsViewProps) {
 
           <button
             onClick={() => toast('Gestion des retraits bientôt disponible')}
-            className="w-full flex items-center justify-between p-2 lg:p-3 bg-gray-900 hover:bg-gray-800 rounded-lg transition-colors"
+            className="w-full flex items-center justify-between p-2 lg:p-3 bg-secondary hover:bg-muted rounded-lg transition-colors"
           >
             <div className="flex items-center gap-2 lg:gap-3">
-              <CreditCard className="h-4 w-4 lg:h-5 lg:w-5 text-gray-400" />
+              <CreditCard className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />
               <div className="text-left">
                 <p className="font-medium text-sm lg:text-base">Retraits DAB</p>
-                <p className="text-xs text-gray-300">Retirez de l'argent aux distributeurs</p>
+                <p className="text-xs text-muted-foreground">Retirez de l'argent aux distributeurs</p>
               </div>
             </div>
             <Badge variant="default" className="bg-green-600 text-xs">Activé</Badge>

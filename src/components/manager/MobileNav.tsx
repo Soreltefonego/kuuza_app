@@ -25,6 +25,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 const menuItems = [
   { href: '/manager/dashboard', icon: LayoutDashboard, label: 'Accueil' },
@@ -125,6 +126,12 @@ export function MobileNav({ user, creditBalance = BigInt(0) }: MobileNavProps) {
                   <p className="text-2xl font-bold text-gradient">
                     {formatCurrency(Number(creditBalance))}
                   </p>
+                </div>
+
+                {/* Theme Toggle */}
+                <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                  <span className="text-sm font-medium">Thème</span>
+                  <ThemeToggle />
                 </div>
 
                 {/* Logout */}

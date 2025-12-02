@@ -57,13 +57,13 @@ export function ActivityView({ transactions, userId }: ActivityViewProps) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-xl lg:text-2xl font-bold mb-2 text-white">Activité</h2>
-        <p className="text-sm lg:text-base text-gray-300">Historique de vos transactions</p>
+        <h2 className="text-xl lg:text-2xl font-bold mb-2 text-foreground">Activité</h2>
+        <p className="text-sm lg:text-base text-muted-foreground">Historique de vos transactions</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 lg:gap-4">
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-secondary border-border">
           <CardContent className="p-3 lg:p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="p-1.5 lg:p-2 rounded-lg bg-green-500/10">
@@ -71,12 +71,12 @@ export function ActivityView({ transactions, userId }: ActivityViewProps) {
               </div>
               <TrendingUp className="h-3 w-3 lg:h-4 lg:w-4 text-green-500" />
             </div>
-            <p className="text-lg lg:text-2xl font-bold text-white">{formatCurrency(totalReceived)}</p>
-            <p className="text-xs text-gray-300">Total reçu ce mois</p>
+            <p className="text-lg lg:text-2xl font-bold text-foreground">{formatCurrency(totalReceived)}</p>
+            <p className="text-xs text-muted-foreground">Total reçu ce mois</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-secondary border-border">
           <CardContent className="p-3 lg:p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="p-1.5 lg:p-2 rounded-lg bg-red-500/10">
@@ -84,21 +84,21 @@ export function ActivityView({ transactions, userId }: ActivityViewProps) {
               </div>
               <TrendingDown className="h-3 w-3 lg:h-4 lg:w-4 text-red-500" />
             </div>
-            <p className="text-lg lg:text-2xl font-bold text-white">{formatCurrency(totalSent)}</p>
-            <p className="text-xs text-gray-300">Total envoyé ce mois</p>
+            <p className="text-lg lg:text-2xl font-bold text-foreground">{formatCurrency(totalSent)}</p>
+            <p className="text-xs text-muted-foreground">Total envoyé ce mois</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-secondary border-border">
           <CardContent className="p-3 lg:p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="p-1.5 lg:p-2 rounded-lg bg-yellow-500/10">
                 <Activity className="h-3 w-3 lg:h-4 lg:w-4 text-yellow-500" />
               </div>
-              <span className="text-xs text-gray-300">En cours</span>
+              <span className="text-xs text-muted-foreground">En cours</span>
             </div>
-            <p className="text-lg lg:text-2xl font-bold text-white">{pendingCount}</p>
-            <p className="text-xs text-gray-300">Transactions en attente</p>
+            <p className="text-lg lg:text-2xl font-bold text-foreground">{pendingCount}</p>
+            <p className="text-xs text-muted-foreground">Transactions en attente</p>
           </CardContent>
         </Card>
       </div>
@@ -106,12 +106,12 @@ export function ActivityView({ transactions, userId }: ActivityViewProps) {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 lg:gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Rechercher une transaction..."
-            className="pl-10 bg-gray-900 border-gray-800 text-sm lg:text-base"
+            className="pl-10 bg-secondary border-border text-sm lg:text-base"
           />
         </div>
 
@@ -153,9 +153,9 @@ export function ActivityView({ transactions, userId }: ActivityViewProps) {
       </div>
 
       {/* Transactions List */}
-      <Card className="bg-gray-950 border-gray-800">
+      <Card className="bg-gray-950 border-border">
         <CardHeader>
-          <CardTitle className="text-base lg:text-lg text-white">Historique des transactions</CardTitle>
+          <CardTitle className="text-base lg:text-lg text-foreground">Historique des transactions</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {filteredTransactions.length > 0 ? (
@@ -170,7 +170,7 @@ export function ActivityView({ transactions, userId }: ActivityViewProps) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="p-4 hover:bg-gray-900/50 transition-colors"
+                    className="p-4 hover:bg-secondary/50 transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -184,15 +184,15 @@ export function ActivityView({ transactions, userId }: ActivityViewProps) {
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-white">
+                          <p className="font-medium text-foreground">
                             {transaction.description || (isIncoming ? 'Transfert reçu' : 'Transfert envoyé')}
                           </p>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xs text-gray-300">
+                            <span className="text-xs text-muted-foreground">
                               {otherUser ? `${otherUser.firstName} ${otherUser.lastName}` : 'Utilisateur'}
                             </span>
-                            <span className="text-xs text-gray-400">•</span>
-                            <span className="text-xs text-gray-300">
+                            <span className="text-xs text-muted-foreground">•</span>
+                            <span className="text-xs text-muted-foreground">
                               {formatDate(transaction.createdAt)}
                             </span>
                           </div>
@@ -201,7 +201,7 @@ export function ActivityView({ transactions, userId }: ActivityViewProps) {
 
                       <div className="text-right">
                         <p className={`font-semibold text-lg ${
-                          isIncoming ? 'text-green-500' : 'text-white'
+                          isIncoming ? 'text-green-500' : 'text-foreground'
                         }`}>
                           {isIncoming ? '+' : '-'}{formatCurrency(Number(transaction.amount))}
                         </p>
@@ -223,11 +223,11 @@ export function ActivityView({ transactions, userId }: ActivityViewProps) {
             </div>
           ) : (
             <div className="p-12 text-center">
-              <div className="mx-auto w-12 h-12 lg:w-16 lg:h-16 mb-3 lg:mb-4 rounded-full bg-gray-900 flex items-center justify-center">
-                <Activity className="h-6 w-6 lg:h-8 lg:w-8 text-gray-600" />
+              <div className="mx-auto w-12 h-12 lg:w-16 lg:h-16 mb-3 lg:mb-4 rounded-full bg-secondary flex items-center justify-center">
+                <Activity className="h-6 w-6 lg:h-8 lg:w-8 text-muted-foreground/60" />
               </div>
-              <p className="text-gray-400 font-medium text-sm lg:text-base">Aucune transaction trouvée</p>
-              <p className="text-xs lg:text-sm text-gray-600 mt-1">
+              <p className="text-muted-foreground font-medium text-sm lg:text-base">Aucune transaction trouvée</p>
+              <p className="text-xs lg:text-sm text-muted-foreground/60 mt-1">
                 {searchTerm ? 'Essayez avec d\'autres critères de recherche' : 'Vos transactions apparaîtront ici'}
               </p>
             </div>

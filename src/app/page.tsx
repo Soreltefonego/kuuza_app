@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { ArrowRight, CreditCard, Users, TrendingUp, Shield, Zap, Globe } from 'lucide-react'
 
 const features = [
@@ -63,6 +64,7 @@ export default function Home() {
                 animate={{ opacity: 1, x: 0 }}
                 className="flex items-center space-x-2 md:space-x-4"
               >
+                <ThemeToggle />
                 <Link href="/login">
                   <Button variant="ghost" size="sm" className="text-xs md:text-sm px-2 md:px-4">
                     Connexion

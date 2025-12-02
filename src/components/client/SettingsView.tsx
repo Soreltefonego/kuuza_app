@@ -98,18 +98,18 @@ export function SettingsView({ client }: SettingsViewProps) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-xl lg:text-2xl font-bold mb-2 text-white">Paramètres</h2>
-        <p className="text-sm lg:text-base text-gray-300">Gérez votre compte et vos préférences</p>
+        <h2 className="text-xl lg:text-2xl font-bold mb-2 text-foreground">Paramètres</h2>
+        <p className="text-sm lg:text-base text-muted-foreground">Gérez votre compte et vos préférences</p>
       </div>
 
       {/* Profile Section */}
-      <Card className="bg-gray-950 border-gray-800">
+      <Card className="bg-card border-border">
         <CardHeader className="flex flex-row items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500">
-              <User className="h-5 w-5 text-white" />
+              <User className="h-5 w-5 text-foreground" />
             </div>
-            <CardTitle className="text-white text-base lg:text-lg">Informations personnelles</CardTitle>
+            <CardTitle className="text-foreground text-base lg:text-lg">Informations personnelles</CardTitle>
           </div>
           {!isEditingProfile ? (
             <Button
@@ -154,46 +154,46 @@ export function SettingsView({ client }: SettingsViewProps) {
         <CardContent className="space-y-3 lg:space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4">
             <div>
-              <Label htmlFor="firstName" className="text-white">Prénom</Label>
+              <Label htmlFor="firstName" className="text-foreground">Prénom</Label>
               <Input
                 id="firstName"
                 value={profileData.firstName}
                 onChange={(e) => setProfileData({ ...profileData, firstName: e.target.value })}
                 disabled={!isEditingProfile}
-                className="mt-2 bg-gray-900 border-gray-800 text-white placeholder:text-gray-400"
+                className="mt-2 bg-secondary border-border text-foreground placeholder:text-muted-foreground"
               />
             </div>
             <div>
-              <Label htmlFor="lastName" className="text-white">Nom</Label>
+              <Label htmlFor="lastName" className="text-foreground">Nom</Label>
               <Input
                 id="lastName"
                 value={profileData.lastName}
                 onChange={(e) => setProfileData({ ...profileData, lastName: e.target.value })}
                 disabled={!isEditingProfile}
-                className="mt-2 bg-gray-900 border-gray-800 text-white placeholder:text-gray-400"
+                className="mt-2 bg-secondary border-border text-foreground placeholder:text-muted-foreground"
               />
             </div>
           </div>
 
           <div>
-            <Label htmlFor="email" className="text-white">Email</Label>
+            <Label htmlFor="email" className="text-foreground">Email</Label>
             <div className="relative mt-2">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300" />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 id="email"
                 type="email"
                 value={profileData.email}
                 onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
                 disabled={!isEditingProfile}
-                className="pl-10 bg-gray-900 border-gray-800 text-white placeholder:text-gray-400"
+                className="pl-10 bg-secondary border-border text-foreground placeholder:text-muted-foreground"
               />
             </div>
           </div>
 
           <div>
-            <Label htmlFor="phone" className="text-white">Téléphone</Label>
+            <Label htmlFor="phone" className="text-foreground">Téléphone</Label>
             <div className="relative mt-2">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300" />
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 id="phone"
                 type="tel"
@@ -201,16 +201,16 @@ export function SettingsView({ client }: SettingsViewProps) {
                 onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                 disabled={!isEditingProfile}
                 placeholder="+237 6XX XXX XXX"
-                className="pl-10 bg-gray-900 border-gray-800 text-white placeholder:text-gray-400"
+                className="pl-10 bg-secondary border-border text-foreground placeholder:text-muted-foreground"
               />
             </div>
           </div>
 
-          <div className="pt-3 border-t border-gray-800">
+          <div className="pt-3 border-t border-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-300">Statut du compte</p>
-                <p className="font-medium mt-1 text-white">
+                <p className="text-sm text-muted-foreground">Statut du compte</p>
+                <p className="font-medium mt-1 text-foreground">
                   <Badge variant="default" className="bg-green-600">
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Vérifié
@@ -218,8 +218,8 @@ export function SettingsView({ client }: SettingsViewProps) {
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-300">Membre depuis</p>
-                <p className="font-medium mt-1 text-white">
+                <p className="text-sm text-muted-foreground">Membre depuis</p>
+                <p className="font-medium mt-1 text-foreground">
                   {new Date(client.createdAt).toLocaleDateString('fr-FR', {
                     year: 'numeric',
                     month: 'long'
@@ -232,13 +232,13 @@ export function SettingsView({ client }: SettingsViewProps) {
       </Card>
 
       {/* Security Section */}
-      <Card className="bg-gray-950 border-gray-800">
+      <Card className="bg-card border-border">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500">
-              <Shield className="h-5 w-5 text-white" />
+              <Shield className="h-5 w-5 text-foreground" />
             </div>
-            <CardTitle className="text-white text-base lg:text-lg">Sécurité</CardTitle>
+            <CardTitle className="text-foreground text-base lg:text-lg">Sécurité</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-3 lg:space-y-4">
@@ -246,7 +246,7 @@ export function SettingsView({ client }: SettingsViewProps) {
             <Button
               variant="outline"
               onClick={() => setIsChangingPassword(true)}
-              className="w-full justify-between border-gray-800 hover:bg-gray-900"
+              className="w-full justify-between border-border hover:bg-secondary"
             >
               <div className="flex items-center gap-3">
                 <Lock className="h-4 w-4" />
@@ -261,33 +261,33 @@ export function SettingsView({ client }: SettingsViewProps) {
               className="space-y-4"
             >
               <div>
-                <Label htmlFor="currentPassword" className="text-white">Mot de passe actuel</Label>
+                <Label htmlFor="currentPassword" className="text-foreground">Mot de passe actuel</Label>
                 <Input
                   id="currentPassword"
                   type="password"
                   value={passwordData.currentPassword}
                   onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                  className="mt-2 bg-gray-900 border-gray-800 text-white placeholder:text-gray-400"
+                  className="mt-2 bg-secondary border-border text-foreground placeholder:text-muted-foreground"
                 />
               </div>
               <div>
-                <Label htmlFor="newPassword" className="text-white">Nouveau mot de passe</Label>
+                <Label htmlFor="newPassword" className="text-foreground">Nouveau mot de passe</Label>
                 <Input
                   id="newPassword"
                   type="password"
                   value={passwordData.newPassword}
                   onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                  className="mt-2 bg-gray-900 border-gray-800 text-white placeholder:text-gray-400"
+                  className="mt-2 bg-secondary border-border text-foreground placeholder:text-muted-foreground"
                 />
               </div>
               <div>
-                <Label htmlFor="confirmPassword" className="text-white">Confirmer le mot de passe</Label>
+                <Label htmlFor="confirmPassword" className="text-foreground">Confirmer le mot de passe</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
                   value={passwordData.confirmPassword}
                   onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                  className="mt-2 bg-gray-900 border-gray-800 text-white placeholder:text-gray-400"
+                  className="mt-2 bg-secondary border-border text-foreground placeholder:text-muted-foreground"
                 />
               </div>
               <div className="flex gap-3">
@@ -314,10 +314,10 @@ export function SettingsView({ client }: SettingsViewProps) {
           )}
 
           <div className="space-y-2 lg:space-y-3">
-            <div className="flex items-center justify-between p-2 lg:p-3 bg-gray-900 rounded-lg">
+            <div className="flex items-center justify-between p-2 lg:p-3 bg-secondary rounded-lg">
               <div className="flex items-center gap-2 lg:gap-3">
-                <Smartphone className="h-3 w-3 lg:h-4 lg:w-4 text-gray-300" />
-                <span className="text-xs lg:text-sm text-white">Authentification à deux facteurs</span>
+                <Smartphone className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground" />
+                <span className="text-xs lg:text-sm text-foreground">Authentification à deux facteurs</span>
               </div>
               <Switch
                 checked={false}
@@ -325,10 +325,10 @@ export function SettingsView({ client }: SettingsViewProps) {
               />
             </div>
 
-            <div className="flex items-center justify-between p-2 lg:p-3 bg-gray-900 rounded-lg">
+            <div className="flex items-center justify-between p-2 lg:p-3 bg-secondary rounded-lg">
               <div className="flex items-center gap-2 lg:gap-3">
-                <Shield className="h-3 w-3 lg:h-4 lg:w-4 text-gray-300" />
-                <span className="text-xs lg:text-sm text-white">Connexion biométrique</span>
+                <Shield className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground" />
+                <span className="text-xs lg:text-sm text-foreground">Connexion biométrique</span>
               </div>
               <Switch
                 checked={false}
@@ -340,20 +340,20 @@ export function SettingsView({ client }: SettingsViewProps) {
       </Card>
 
       {/* Notifications Section */}
-      <Card className="bg-gray-950 border-gray-800">
+      <Card className="bg-card border-border">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500">
-              <Bell className="h-5 w-5 text-white" />
+              <Bell className="h-5 w-5 text-foreground" />
             </div>
-            <CardTitle className="text-white text-base lg:text-lg">Notifications</CardTitle>
+            <CardTitle className="text-foreground text-base lg:text-lg">Notifications</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex items-center justify-between p-2 lg:p-3 bg-gray-900 rounded-lg">
+          <div className="flex items-center justify-between p-2 lg:p-3 bg-secondary rounded-lg">
             <div className="flex items-center gap-2 lg:gap-3">
-              <Mail className="h-3 w-3 lg:h-4 lg:w-4 text-gray-300" />
-              <span className="text-xs lg:text-sm text-white">Notifications par email</span>
+              <Mail className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground" />
+              <span className="text-xs lg:text-sm text-foreground">Notifications par email</span>
             </div>
             <Switch
               checked={notifications.email}
@@ -364,10 +364,10 @@ export function SettingsView({ client }: SettingsViewProps) {
             />
           </div>
 
-          <div className="flex items-center justify-between p-2 lg:p-3 bg-gray-900 rounded-lg">
+          <div className="flex items-center justify-between p-2 lg:p-3 bg-secondary rounded-lg">
             <div className="flex items-center gap-2 lg:gap-3">
-              <Smartphone className="h-3 w-3 lg:h-4 lg:w-4 text-gray-300" />
-              <span className="text-xs lg:text-sm text-white">Notifications SMS</span>
+              <Smartphone className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground" />
+              <span className="text-xs lg:text-sm text-foreground">Notifications SMS</span>
             </div>
             <Switch
               checked={notifications.sms}
@@ -378,10 +378,10 @@ export function SettingsView({ client }: SettingsViewProps) {
             />
           </div>
 
-          <div className="flex items-center justify-between p-2 lg:p-3 bg-gray-900 rounded-lg">
+          <div className="flex items-center justify-between p-2 lg:p-3 bg-secondary rounded-lg">
             <div className="flex items-center gap-2 lg:gap-3">
-              <Bell className="h-3 w-3 lg:h-4 lg:w-4 text-gray-300" />
-              <span className="text-xs lg:text-sm text-white">Notifications push</span>
+              <Bell className="h-3 w-3 lg:h-4 lg:w-4 text-muted-foreground" />
+              <span className="text-xs lg:text-sm text-foreground">Notifications push</span>
             </div>
             <Switch
               checked={notifications.push}
@@ -395,27 +395,27 @@ export function SettingsView({ client }: SettingsViewProps) {
       </Card>
 
       {/* Preferences Section */}
-      <Card className="bg-gray-950 border-gray-800">
+      <Card className="bg-card border-border">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500">
-              <Globe className="h-5 w-5 text-white" />
+              <Globe className="h-5 w-5 text-foreground" />
             </div>
-            <CardTitle className="text-white text-base lg:text-lg">Préférences</CardTitle>
+            <CardTitle className="text-foreground text-base lg:text-lg">Préférences</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-3 lg:space-y-4">
           <div>
-            <Label className="text-white">Langue</Label>
-            <select className="mt-2 w-full p-2 bg-gray-900 border border-gray-800 rounded-lg text-white">
+            <Label className="text-foreground">Langue</Label>
+            <select className="mt-2 w-full p-2 bg-secondary border border-border rounded-lg text-foreground">
               <option value="fr">Français</option>
               <option value="en">English</option>
             </select>
           </div>
 
           <div>
-            <Label className="text-white">Devise par défaut</Label>
-            <select className="mt-2 w-full p-2 bg-gray-900 border border-gray-800 rounded-lg text-white" defaultValue="USD">
+            <Label className="text-foreground">Devise par défaut</Label>
+            <select className="mt-2 w-full p-2 bg-secondary border border-border rounded-lg text-foreground" defaultValue="USD">
               <option value="USD">USD - Dollar US</option>
               <option value="EUR">EUR - Euro</option>
               <option value="XAF">XAF - Franc CFA</option>
@@ -423,8 +423,8 @@ export function SettingsView({ client }: SettingsViewProps) {
           </div>
 
           <div>
-            <Label className="text-white">Fuseau horaire</Label>
-            <select className="mt-2 w-full p-2 bg-gray-900 border border-gray-800 rounded-lg text-white">
+            <Label className="text-foreground">Fuseau horaire</Label>
+            <select className="mt-2 w-full p-2 bg-secondary border border-border rounded-lg text-foreground">
               <option value="Africa/Douala">Afrique/Douala (UTC+1)</option>
               <option value="Europe/Paris">Europe/Paris (UTC+1)</option>
             </select>
@@ -433,7 +433,7 @@ export function SettingsView({ client }: SettingsViewProps) {
       </Card>
 
       {/* Danger Zone */}
-      <Card className="bg-gray-950 border-red-900/50">
+      <Card className="bg-card border-red-900/50">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-red-500/10">

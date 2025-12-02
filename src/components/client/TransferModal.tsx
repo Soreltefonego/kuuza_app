@@ -122,7 +122,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={handleClose}
         >
           <motion.div
@@ -132,20 +132,20 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-lg"
           >
-            <Card className="bg-gray-950 border-gray-800">
+            <Card className="bg-card border-border">
               <CardHeader className="relative">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={handleClose}
-                  className="absolute right-4 top-4 text-gray-400 hover:text-white"
+                  className="absolute right-4 top-4 text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-5 w-5" />
                 </Button>
 
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500">
-                    <Send className="h-5 w-5 text-white" />
+                    <Send className="h-5 w-5 text-foreground" />
                   </div>
                   <CardTitle className="text-xl">Transfert d'argent</CardTitle>
                 </div>
@@ -175,7 +175,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                     <div>
                       <Label htmlFor="recipientName">Nom du bénéficiaire *</Label>
                       <div className="relative mt-2">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           id="recipientName"
                           value={recipientData.recipientName}
@@ -184,7 +184,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                             recipientName: e.target.value
                           })}
                           placeholder="John Doe"
-                          className="pl-10 bg-gray-900 border-gray-800"
+                          className="pl-10 bg-secondary border-border"
                         />
                       </div>
                     </div>
@@ -192,7 +192,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                     <div>
                       <Label htmlFor="iban">IBAN / Numéro de compte *</Label>
                       <div className="relative mt-2">
-                        <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                        <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           id="iban"
                           value={recipientData.iban}
@@ -201,10 +201,10 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                             iban: e.target.value.toUpperCase()
                           })}
                           placeholder="CM21 0003 0000 1234 5678 9012 345"
-                          className="pl-10 bg-gray-900 border-gray-800 font-mono"
+                          className="pl-10 bg-secondary border-border font-mono"
                         />
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         Format IBAN ou numéro de compte local
                       </p>
                     </div>
@@ -212,7 +212,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                     <div>
                       <Label htmlFor="bankName">Nom de la banque</Label>
                       <div className="relative mt-2">
-                        <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                        <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           id="bankName"
                           value={recipientData.bankName}
@@ -221,7 +221,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                             bankName: e.target.value
                           })}
                           placeholder="Banque Atlantique"
-                          className="pl-10 bg-gray-900 border-gray-800"
+                          className="pl-10 bg-secondary border-border"
                         />
                       </div>
                     </div>
@@ -237,13 +237,13 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                             swift: e.target.value.toUpperCase()
                           })}
                           placeholder="COBACMCX"
-                          className="bg-gray-900 border-gray-800 font-mono"
+                          className="bg-secondary border-border font-mono"
                         />
                       </div>
                       <div>
                         <Label htmlFor="country">Pays</Label>
                         <div className="relative mt-2">
-                          <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                          <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
                             id="country"
                             value={recipientData.country}
@@ -252,7 +252,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                               country: e.target.value
                             })}
                             placeholder="Cameroun"
-                            className="pl-10 bg-gray-900 border-gray-800"
+                            className="pl-10 bg-secondary border-border"
                           />
                         </div>
                       </div>
@@ -275,10 +275,10 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                     animate={{ opacity: 1, x: 0 }}
                     className="space-y-4"
                   >
-                    <div className="p-4 bg-gray-900 rounded-xl">
-                      <p className="text-sm text-gray-500 mb-1">Destinataire</p>
+                    <div className="p-4 bg-secondary rounded-xl">
+                      <p className="text-sm text-muted-foreground mb-1">Destinataire</p>
                       <p className="font-medium">{recipientData.recipientName}</p>
-                      <p className="text-sm text-gray-400 font-mono">{recipientData.iban}</p>
+                      <p className="text-sm text-muted-foreground font-mono">{recipientData.iban}</p>
                     </div>
 
                     <div>
@@ -290,13 +290,13 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                           value={amount}
                           onChange={(e) => setAmount(e.target.value)}
                           placeholder="0"
-                          className="text-2xl font-bold bg-gray-900 border-gray-800 pr-16"
+                          className="text-2xl font-bold bg-secondary border-border pr-16"
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                           USD
                         </span>
                       </div>
-                      <p className="text-sm text-gray-500 mt-2">
+                      <p className="text-sm text-muted-foreground mt-2">
                         Solde disponible: {formatCurrency(currentBalance)}
                       </p>
                     </div>
@@ -308,7 +308,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Motif du transfert"
-                        className="mt-2 bg-gray-900 border-gray-800"
+                        className="mt-2 bg-secondary border-border"
                       />
                     </div>
 
@@ -316,7 +316,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                       <Button
                         variant="outline"
                         onClick={() => setStep('recipient')}
-                        className="flex-1 border-gray-700"
+                        className="flex-1 border-border"
                       >
                         Retour
                       </Button>
@@ -343,7 +343,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                         <AlertCircle className="h-5 w-5 text-yellow-500 shrink-0 mt-0.5" />
                         <div>
                           <p className="font-medium text-yellow-500">Vérifiez les détails</p>
-                          <p className="text-sm text-gray-400 mt-1">
+                          <p className="text-sm text-muted-foreground mt-1">
                             Veuillez vérifier attentivement les informations avant de confirmer.
                           </p>
                         </div>
@@ -352,26 +352,26 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
 
                     <div className="space-y-3">
                       <div className="flex justify-between py-2">
-                        <span className="text-gray-500">Destinataire</span>
+                        <span className="text-muted-foreground">Destinataire</span>
                         <span className="font-medium">{recipientData.recipientName}</span>
                       </div>
                       <div className="flex justify-between py-2">
-                        <span className="text-gray-500">IBAN</span>
+                        <span className="text-muted-foreground">IBAN</span>
                         <span className="font-mono text-sm">{recipientData.iban}</span>
                       </div>
                       <div className="flex justify-between py-2">
-                        <span className="text-gray-500">Banque</span>
+                        <span className="text-muted-foreground">Banque</span>
                         <span>{recipientData.bankName || '-'}</span>
                       </div>
-                      <div className="flex justify-between py-2 border-t border-gray-800 pt-3">
-                        <span className="text-gray-500">Montant</span>
+                      <div className="flex justify-between py-2 border-t border-border pt-3">
+                        <span className="text-muted-foreground">Montant</span>
                         <span className="text-xl font-bold text-blue-400">
                           {formatCurrency(parseFloat(amount))}
                         </span>
                       </div>
                       {description && (
                         <div className="flex justify-between py-2">
-                          <span className="text-gray-500">Description</span>
+                          <span className="text-muted-foreground">Description</span>
                           <span className="text-sm">{description}</span>
                         </div>
                       )}
@@ -381,7 +381,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                       <Button
                         variant="outline"
                         onClick={() => setStep('amount')}
-                        className="flex-1 border-gray-700"
+                        className="flex-1 border-border"
                         disabled={isLoading}
                       >
                         Retour
@@ -408,12 +408,12 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                       <CheckCircle className="h-10 w-10 text-green-500" />
                     </div>
                     <h3 className="text-xl font-semibold mb-2">Transfert réussi!</h3>
-                    <p className="text-gray-400 mb-6">
+                    <p className="text-muted-foreground mb-6">
                       {formatCurrency(parseFloat(amount))} ont été envoyés à {recipientData.recipientName}
                     </p>
                     <Button
                       onClick={handleClose}
-                      className="w-full bg-gray-800 hover:bg-gray-700"
+                      className="w-full bg-muted hover:bg-muted"
                     >
                       Fermer
                     </Button>
