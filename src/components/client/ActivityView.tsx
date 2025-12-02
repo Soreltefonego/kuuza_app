@@ -6,6 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { generateWireTransferPDF, generateTransactionReceipt } from '@/lib/pdf-generator'
+import { useTranslation } from 'react-i18next'
+import '@/lib/i18n'
 import {
   ArrowUpRight,
   ArrowDownLeft,
@@ -33,6 +36,7 @@ interface ActivityViewProps {
 }
 
 export function ActivityView({ transactions, userId }: ActivityViewProps) {
+  const { t } = useTranslation()
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState<'all' | 'sent' | 'received'>('all')
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('month')
@@ -87,6 +91,34 @@ export function ActivityView({ transactions, userId }: ActivityViewProps) {
       return 'Virement émis'
     }
     return transaction.type
+  }
+
+  // Fonction pour télécharger l'ordre de virement
+  const handleDownloadWireOrder = (transaction: any) => {
+    const isIncoming = transaction.toUserId === userId
+    const accountDetails = getAccountDetails(transaction, isIncoming)
+
+    const wireOrderData = {
+      reference: transaction.reference,
+      date: new Date(transaction.createdAt),
+      senderName: isIncoming ? (transaction.metadata?.senderName || accountDetails.name) : 'Mon Compte',
+      senderAccount: isIncoming ? '' : 'KUUZA-' + userId.slice(0, 8).toUpperCase(),
+      recipientName: isIncoming ? 'Mon Compte' : accountDetails.name,
+      recipientAccount: isIncoming ? 'KUUZA-' + userId.slice(0, 8).toUpperCase() : '',
+      amount: Number(transaction.amount),
+      currency: 'USD',
+      description: transaction.description || 'Virement bancaire',
+      bankName: 'Kuuza Bank',
+      status: transaction.status === 'COMPLETED' ? 'Exécuté' : 'En cours',
+      type: isIncoming ? 'incoming' as const : 'outgoing' as const
+    }
+
+    generateWireTransferPDF(wireOrderData)
+  }
+
+  // Fonction pour télécharger le reçu
+  const handleDownloadReceipt = (transaction: any) => {
+    generateTransactionReceipt(transaction)
   }
 
   // Fonction pour obtenir les détails du compte
@@ -332,7 +364,7 @@ export function ActivityView({ transactions, userId }: ActivityViewProps) {
                           animate={{ opacity: 1, height: 'auto' }}
                           className="mt-4 pt-4 border-t border-border"
                         >
-                          <div className="grid grid-cols-2 gap-4 text-xs lg:text-sm">
+                          <div className="grid grid-cols-2 gap-4 text-xs lg:text-sm mb-4">
                             <div>
                               <p className="text-muted-foreground mb-1">Référence</p>
                               <p className="font-mono text-foreground">{transaction.reference}</p>
@@ -350,6 +382,36 @@ export function ActivityView({ transactions, userId }: ActivityViewProps) {
                               <p className="font-mono text-foreground text-xs">{transaction.id}</p>
                             </div>
                           </div>
+
+                          {/* Boutons de téléchargement */}
+                          {transaction.status === 'COMPLETED' && (
+                            <div className="flex gap-2 pt-3 border-t border-border">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleDownloadWireOrder(transaction)
+                                }}
+                                className="flex-1 text-xs"
+                              >
+                                <Download className="h-3 w-3 mr-1" />
+                                Ordre de virement
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleDownloadReceipt(transaction)
+                                }}
+                                className="flex-1 text-xs"
+                              >
+                                <FileText className="h-3 w-3 mr-1" />
+                                Reçu
+                              </Button>
+                            </div>
+                          )}
                         </motion.div>
                       )}
                     </div>

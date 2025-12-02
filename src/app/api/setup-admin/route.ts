@@ -27,7 +27,7 @@ export async function POST() {
         password: hashedPassword,
         firstName: 'Super',
         lastName: 'Admin',
-        phone: '+237600000000',
+        phone: '+4790000000',
         role: 'MANAGER' // Utiliser MANAGER temporairement
       }
     })

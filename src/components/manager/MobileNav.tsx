@@ -12,7 +12,8 @@ import {
   CreditCard,
   LogOut,
   User,
-  Wallet
+  Wallet,
+  MessageCircle
 } from 'lucide-react'
 import { cn, formatCurrency } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -30,7 +31,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 const menuItems = [
   { href: '/manager/dashboard', icon: LayoutDashboard, label: 'Accueil' },
   { href: '/manager/clients', icon: Users, label: 'Clients' },
-  { href: '/manager/transactions', icon: History, label: 'Historique' },
+  { href: '/manager/chat', icon: MessageCircle, label: 'Messages' },
   { href: '/manager/credits', icon: CreditCard, label: 'Crédit' },
 ]
 

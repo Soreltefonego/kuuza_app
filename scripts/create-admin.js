@@ -27,7 +27,7 @@ async function createAdmin() {
         password: hashedPassword,
         firstName: 'Super',
         lastName: 'Admin',
-        phone: '+237600000000',
+        phone: '+4790000000',
         role: 'ADMIN',
         isEmailVerified: true
       }

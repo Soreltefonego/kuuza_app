@@ -228,13 +228,13 @@ export class ManagerService {
           type: TransactionType.BUY_CREDIT,
           amount: amountInCents,
           toUserId: manager.userId,
-          description: `Achat de crédit via Orange Money`,
+          description: `Achat de crédit via Vipps`,
           status: TransactionStatus.SUCCESS,
           reference: generateTransactionReference(),
         },
       })
 
-      // Create Orange Money payment record
+      // Create Vipps payment record
       const payment = await tx.orangeMoneyPayment.create({
         data: {
           managerId,

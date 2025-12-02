@@ -51,6 +51,31 @@ export const activateAccountSchema = z.object({
   path: ["confirmPassword"],
 })
 
+// Chat validation schemas
+export const createConversationSchema = z.object({
+  subject: z.string().optional(),
+})
+
+export const sendMessageSchema = z.object({
+  conversationId: z.string().cuid('ID de conversation invalide'),
+  content: z.string().min(1, 'Le message ne peut pas être vide').max(1000, 'Le message ne peut pas dépasser 1000 caractères'),
+})
+
+export const getMessagesSchema = z.object({
+  conversationId: z.string().cuid('ID de conversation invalide'),
+  page: z.number().int().positive().optional().default(1),
+  limit: z.number().int().min(1).max(50).optional().default(20),
+})
+
+export const markAsReadSchema = z.object({
+  conversationId: z.string().cuid('ID de conversation invalide'),
+  messageId: z.string().cuid('ID de message invalide').optional(),
+})
+
+export const closeConversationSchema = z.object({
+  conversationId: z.string().cuid('ID de conversation invalide'),
+})
+
 export type LoginInput = z.infer<typeof loginSchema>
 export type SignupInput = z.infer<typeof signupSchema>
 export type CreateClientInput = z.infer<typeof createClientSchema>
@@ -58,3 +83,8 @@ export type CreditClientInput = z.infer<typeof creditClientSchema>
 export type BuyCreditsInput = z.infer<typeof buyCreditsSchema>
 export type TransferInput = z.infer<typeof transferSchema>
 export type ActivateAccountInput = z.infer<typeof activateAccountSchema>
+export type CreateConversationInput = z.infer<typeof createConversationSchema>
+export type SendMessageInput = z.infer<typeof sendMessageSchema>
+export type GetMessagesInput = z.infer<typeof getMessagesSchema>
+export type MarkAsReadInput = z.infer<typeof markAsReadSchema>
+export type CloseConversationInput = z.infer<typeof closeConversationSchema>

@@ -54,8 +54,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Client crédité avec succès! Nouveau solde: ${newBalance} XAF`,
+      message: `Client crédité avec succès! Nouveau solde: ${newBalance} USD`,
       data: serializedResult,
+      transaction: serializedResult.transaction,
       newBalance: newBalance
     })
 

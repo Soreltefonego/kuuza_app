@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { DocumentUploadModal } from './DocumentUploadModal'
 import {
   X,
   Send,
@@ -31,6 +32,8 @@ type TransferStep = 'recipient' | 'amount' | 'confirm' | 'success'
 export function TransferModal({ isOpen, onClose, currentBalance }: TransferModalProps) {
   const [step, setStep] = useState<TransferStep>('recipient')
   const [isLoading, setIsLoading] = useState(false)
+  const [showDocumentUpload, setShowDocumentUpload] = useState(false)
+  const [pendingTransactionId, setPendingTransactionId] = useState<string | null>(null)
 
   // Form data
   const [recipientData, setRecipientData] = useState({
@@ -38,7 +41,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
     iban: '',
     bankName: '',
     swift: '',
-    country: 'Cameroun'
+    country: 'Norvège'
   })
 
   const [amount, setAmount] = useState('')
@@ -84,8 +87,17 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
       })
 
       if (response.ok) {
-        setStep('success')
-        toast.success('Transfert effectué avec succès!')
+        const result = await response.json()
+        setPendingTransactionId(result.transactionId || 'temp-id')
+
+        // Pour les virements externes, demander un document
+        if (recipientData.bankName && recipientData.bankName !== 'Kuuza Bank') {
+          setShowDocumentUpload(true)
+          toast('Document requis pour finaliser le virement')
+        } else {
+          setStep('success')
+          toast.success('Transfert effectué avec succès!')
+        }
       } else {
         throw new Error('Erreur lors du transfert')
       }
@@ -104,7 +116,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
       iban: '',
       bankName: '',
       swift: '',
-      country: 'Cameroun'
+      country: 'Norvège'
     })
     setAmount('')
     setDescription('')
@@ -200,7 +212,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                             ...recipientData,
                             iban: e.target.value.toUpperCase()
                           })}
-                          placeholder="CM21 0003 0000 1234 5678 9012 345"
+                          placeholder="NO93 8601 1117 947"
                           className="pl-10 bg-secondary border-border font-mono"
                         />
                       </div>
@@ -220,7 +232,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                             ...recipientData,
                             bankName: e.target.value
                           })}
-                          placeholder="Banque Atlantique"
+                          placeholder="DNB Bank"
                           className="pl-10 bg-secondary border-border"
                         />
                       </div>
@@ -236,7 +248,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                             ...recipientData,
                             swift: e.target.value.toUpperCase()
                           })}
-                          placeholder="COBACMCX"
+                          placeholder="DNBANOKKXXX"
                           className="bg-secondary border-border font-mono"
                         />
                       </div>
@@ -251,7 +263,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                               ...recipientData,
                               country: e.target.value
                             })}
-                            placeholder="Cameroun"
+                            placeholder="Norvège"
                             className="pl-10 bg-secondary border-border"
                           />
                         </div>
@@ -424,6 +436,30 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
           </motion.div>
         </motion.div>
       )}
+
+      {/* Document Upload Modal */}
+      <DocumentUploadModal
+        isOpen={showDocumentUpload}
+        onClose={() => {
+          setShowDocumentUpload(false)
+          setStep('success')
+          handleClose()
+        }}
+        transactionId={pendingTransactionId || ''}
+        onUploadSuccess={() => {
+          setShowDocumentUpload(false)
+          setStep('success')
+          toast.success('Document téléversé! Le virement sera traité sous peu.')
+          setTimeout(() => {
+            handleClose()
+          }, 2000)
+        }}
+        transactionDetails={{
+          amount: parseFloat(amount),
+          recipient: recipientData.recipientName,
+          description: description || 'Virement bancaire'
+        }}
+      />
     </AnimatePresence>
   )
 }

@@ -30,11 +30,13 @@ import { formatCurrency, formatDate } from '@/lib/utils'
 import { signOut } from 'next-auth/react'
 import { toast } from 'react-hot-toast'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { LanguageSwitcher } from '@/components/language-switcher'
 import { TransferModal } from './TransferModal'
 import { RechargeModal } from './RechargeModal'
 import { ActivityView } from './ActivityView'
 import { SettingsView } from './SettingsView'
 import { CardsView } from './CardsView'
+import { ChatWidget } from './ChatWidget'
 
 interface ClientDashboardProps {
   client: any
@@ -95,6 +97,7 @@ export function ClientDashboard({ client, transactions, balance }: ClientDashboa
             >
               <Bell className="h-5 w-5" />
             </Button>
+            <LanguageSwitcher />
             <ThemeToggle />
             <Button
               variant="ghost"
@@ -526,6 +529,12 @@ export function ClientDashboard({ client, transactions, balance }: ClientDashboa
           })}
         </div>
       </nav>
+
+      {/* Chat Widget */}
+      <ChatWidget
+        clientId={client.id}
+        clientName={`${client.user.firstName} ${client.user.lastName}`}
+      />
     </div>
   )
 }

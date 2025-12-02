@@ -23,7 +23,17 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { UserPlus, Send, Search, User, Mail, Phone, Calendar, CreditCard, Copy, CheckCircle, Link } from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { UserPlus, Send, Search, User, Mail, Phone, Calendar, CreditCard, Copy, CheckCircle, Link, Ban, Trash2, Unlock, Bell } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -43,6 +53,17 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
   const [activationLinkDialogOpen, setActivationLinkDialogOpen] = useState(false)
   const [activationLink, setActivationLink] = useState('')
   const [linkCopied, setLinkCopied] = useState(false)
+  const [blockDialogOpen, setBlockDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [clientToBlock, setClientToBlock] = useState<any>(null)
+  const [clientToDelete, setClientToDelete] = useState<any>(null)
+  const [notificationDialogOpen, setNotificationDialogOpen] = useState(false)
+  const [clientToNotify, setClientToNotify] = useState<any>(null)
+  const [notificationData, setNotificationData] = useState({
+    title: '',
+    message: '',
+    type: 'INFO'
+  })
 
   // Form states
   const [formData, setFormData] = useState({
@@ -114,6 +135,27 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
 
       if (response.ok) {
         const result = await response.json()
+
+        // Generate wire transfer PDF
+        if (result.transaction) {
+          const { generateWireTransferPDF } = await import('@/lib/pdf-generator')
+          generateWireTransferPDF({
+            reference: result.transaction.id,
+            date: new Date(),
+            senderName: creditData.senderName || 'Kuuza Bank',
+            senderAccount: 'KUUZA-CENTRAL-001',
+            recipientName: `${selectedClient.user.firstName} ${selectedClient.user.lastName}`,
+            recipientAccount: selectedClient.accountNumber,
+            amount: parseFloat(creditData.amount),
+            currency: 'USD',
+            description: creditData.description || 'Virement bancaire',
+            status: 'COMPLETED',
+            bankName: 'Kuuza Bank',
+            type: 'incoming'
+          })
+          toast.success('Ordre de virement généré et téléchargé!')
+        }
+
         toast.success(result.message || 'Client crédité avec succès!')
         setCreditDialogOpen(false)
         setCreditData({ amount: '', senderName: '', description: '' })
@@ -127,6 +169,100 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
     } catch (error) {
       console.error('Erreur lors du crédit:', error)
       toast.error('Erreur réseau lors du crédit')
+    }
+    setIsLoading(false)
+  }
+
+  const handleBlockClient = async (client: any, action: 'block' | 'unblock') => {
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/manager/block-client', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId: client.id,
+          action,
+          reason: action === 'block' ? 'Bloqué par le manager' : undefined
+        })
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        toast.success(result.message)
+        setBlockDialogOpen(false)
+        setClientToBlock(null)
+        router.refresh()
+      } else {
+        const error = await response.json()
+        toast.error(error.error || `Erreur lors du ${action === 'block' ? 'blocage' : 'déblocage'}`)
+      }
+    } catch (error) {
+      console.error('Error blocking/unblocking client:', error)
+      toast.error('Erreur réseau')
+    }
+    setIsLoading(false)
+  }
+
+  const handleDeleteClient = async () => {
+    if (!clientToDelete) return
+
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/manager/delete-client', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId: clientToDelete.id,
+          confirmDelete: true
+        })
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        toast.success(result.message)
+        setDeleteDialogOpen(false)
+        setClientToDelete(null)
+        router.refresh()
+      } else {
+        const error = await response.json()
+        toast.error(error.error || 'Erreur lors de la suppression')
+      }
+    } catch (error) {
+      console.error('Error deleting client:', error)
+      toast.error('Erreur réseau')
+    }
+    setIsLoading(false)
+  }
+
+  const handleSendNotification = async () => {
+    if (!clientToNotify || !notificationData.title || !notificationData.message) return
+
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/manager/send-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId: clientToNotify.id,
+          title: notificationData.title,
+          message: notificationData.message,
+          type: notificationData.type
+        })
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        toast.success(result.message)
+        setNotificationDialogOpen(false)
+        setClientToNotify(null)
+        setNotificationData({ title: '', message: '', type: 'INFO' })
+      } else {
+        const error = await response.json()
+        toast.error(error.error || 'Erreur lors de l\'envoi')
+      }
+    } catch (error) {
+      console.error('Error sending notification:', error)
+      toast.error('Erreur réseau')
     }
     setIsLoading(false)
   }
@@ -304,8 +440,14 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
                       <CardTitle className="text-sm md:text-base">
                         {client.user.firstName} {client.user.lastName}
                       </CardTitle>
-                      <Badge variant={client.isActivated ? 'default' : 'secondary'} className="mt-1 text-[10px] md:text-xs">
-                        {client.isActivated ? 'Actif' : 'Inactif'}
+                      <Badge
+                        variant={
+                          client.isBlocked ? 'destructive' :
+                          client.isActivated ? 'default' : 'secondary'
+                        }
+                        className="mt-1 text-[10px] md:text-xs"
+                      >
+                        {client.isBlocked ? 'Bloqué' : client.isActivated ? 'Actif' : 'Inactif'}
                       </Badge>
                     </div>
                   </div>
@@ -341,33 +483,89 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-1.5 md:gap-2">
-                  {!client.isActivated && client.activationToken && (
+                <div className="space-y-2">
+                  <div className="flex gap-1.5 md:gap-2">
+                    {!client.isActivated && client.activationToken && (
+                      <Button
+                        onClick={() => {
+                          const link = `${window.location.origin}/activate/${client.activationToken}`
+                          navigator.clipboard.writeText(link)
+                          toast.success('Lien d\'activation copié!')
+                        }}
+                        variant="outline"
+                        className="flex-1 h-8 md:h-9"
+                        size="sm"
+                      >
+                        <Link className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1 md:mr-2" />
+                        <span className="text-[10px] md:text-xs">Copier lien</span>
+                      </Button>
+                    )}
                     <Button
                       onClick={() => {
-                        const link = `${window.location.origin}/activate/${client.activationToken}`
-                        navigator.clipboard.writeText(link)
-                        toast.success('Lien d\'activation copié!')
+                        setSelectedClient(client)
+                        setCreditDialogOpen(true)
+                      }}
+                      className={client.isActivated ? "w-full gradient-primary h-8 md:h-9" : "flex-1 gradient-primary h-8 md:h-9"}
+                      size="sm"
+                      disabled={client.isBlocked}
+                    >
+                      <Send className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1 md:mr-2" />
+                      <span className="text-[10px] md:text-xs">Créditer</span>
+                    </Button>
+                  </div>
+
+                  {/* Notification and Management Actions */}
+                  <div className="flex gap-1.5 md:gap-2">
+                    <Button
+                      onClick={() => {
+                        setClientToNotify(client)
+                        setNotificationDialogOpen(true)
                       }}
                       variant="outline"
-                      className="flex-1 h-8 md:h-9"
                       size="sm"
+                      className="flex-1 h-8 md:h-9 text-blue-500 hover:text-blue-600"
                     >
-                      <Link className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1 md:mr-2" />
-                      <span className="text-[10px] md:text-xs">Copier lien</span>
+                      <Bell className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1" />
+                      <span className="text-[10px] md:text-xs">Notifier</span>
                     </Button>
-                  )}
-                  <Button
-                    onClick={() => {
-                      setSelectedClient(client)
-                      setCreditDialogOpen(true)
-                    }}
-                    className={client.isActivated ? "w-full gradient-primary h-8 md:h-9" : "flex-1 gradient-primary h-8 md:h-9"}
-                    size="sm"
-                  >
-                    <Send className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1 md:mr-2" />
-                    <span className="text-[10px] md:text-xs">Créditer</span>
-                  </Button>
+                    <Button
+                      onClick={() => {
+                        setClientToBlock(client)
+                        setBlockDialogOpen(true)
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className={`h-8 md:h-9 px-2 ${
+                        client.isBlocked
+                          ? 'text-green-500 hover:text-green-600'
+                          : 'text-orange-500 hover:text-orange-600'
+                      }`}
+                    >
+                      {client.isBlocked ? (
+                        <>
+                          <Unlock className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1" />
+                          <span className="text-[10px] md:text-xs">Débloquer</span>
+                        </>
+                      ) : (
+                        <>
+                          <Ban className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1" />
+                          <span className="text-[10px] md:text-xs">Bloquer</span>
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setClientToDelete(client)
+                        setDeleteDialogOpen(true)
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="h-8 md:h-9 px-2 text-red-500 hover:text-red-600"
+                    >
+                      <Trash2 className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1" />
+                      <span className="text-[10px] md:text-xs">Supprimer</span>
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -451,6 +649,180 @@ export function ClientsPageContent({ clients, managerId }: ClientsPageContentPro
               onClick={() => setActivationLinkDialogOpen(false)}
             >
               Fermer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Block/Unblock Dialog */}
+      <AlertDialog open={blockDialogOpen} onOpenChange={setBlockDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {clientToBlock?.isBlocked ? 'Débloquer le compte' : 'Bloquer le compte'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {clientToBlock?.isBlocked
+                ? `Êtes-vous sûr de vouloir débloquer le compte de ${clientToBlock?.user?.firstName} ${clientToBlock?.user?.lastName} ? Le client pourra à nouveau accéder à son compte.`
+                : `Êtes-vous sûr de vouloir bloquer le compte de ${clientToBlock?.user?.firstName} ${clientToBlock?.user?.lastName} ? Le client ne pourra plus accéder à son compte.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setClientToBlock(null)}>
+              Annuler
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => handleBlockClient(clientToBlock, clientToBlock?.isBlocked ? 'unblock' : 'block')}
+              className={clientToBlock?.isBlocked ? 'bg-green-600 hover:bg-green-700' : 'bg-orange-600 hover:bg-orange-700'}
+            >
+              {clientToBlock?.isBlocked ? 'Débloquer' : 'Bloquer'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-red-600">
+              Supprimer le compte
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              <div className="space-y-3">
+                <p>
+                  Êtes-vous sûr de vouloir supprimer définitivement le compte de{' '}
+                  <span className="font-semibold">
+                    {clientToDelete?.user?.firstName} {clientToDelete?.user?.lastName}
+                  </span>
+                  ?
+                </p>
+                {Number(clientToDelete?.accountBalance) > 0 && (
+                  <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                    <p className="text-sm text-yellow-600">
+                      ⚠️ Attention: Ce compte a un solde de {formatCurrency(Number(clientToDelete?.accountBalance))}.
+                      Le solde sera perdu lors de la suppression.
+                    </p>
+                  </div>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  Cette action est irréversible. Toutes les données associées seront perdues.
+                </p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setClientToDelete(null)}>
+              Annuler
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteClient}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Supprimer définitivement
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Notification Dialog */}
+      <Dialog open={notificationDialogOpen} onOpenChange={setNotificationDialogOpen}>
+        <DialogContent className="w-[95vw] max-w-md rounded-lg">
+          <DialogHeader>
+            <DialogTitle>Envoyer une notification</DialogTitle>
+            <DialogDescription>
+              Envoyez un message personnalisé à {clientToNotify?.user?.firstName} {clientToNotify?.user?.lastName}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="notif-type">Type de notification</Label>
+              <Select
+                value={notificationData.type}
+                onValueChange={(value) => setNotificationData({ ...notificationData, type: value })}
+              >
+                <SelectTrigger id="notif-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="INFO">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-blue-500" />
+                      Information
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="SUCCESS">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500" />
+                      Succès
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="WARNING">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                      Avertissement
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="ERROR">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-red-500" />
+                      Erreur
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="notif-title">Titre *</Label>
+              <Input
+                id="notif-title"
+                value={notificationData.title}
+                onChange={(e) => setNotificationData({ ...notificationData, title: e.target.value })}
+                placeholder="Ex: Mise à jour importante"
+                maxLength={100}
+              />
+              <p className="text-xs text-muted-foreground">
+                {notificationData.title.length}/100 caractères
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="notif-message">Message *</Label>
+              <textarea
+                id="notif-message"
+                value={notificationData.message}
+                onChange={(e) => setNotificationData({ ...notificationData, message: e.target.value })}
+                placeholder="Tapez votre message ici..."
+                className="w-full min-h-[100px] px-3 py-2 rounded-md border border-input bg-background text-sm resize-none"
+                maxLength={1000}
+              />
+              <p className="text-xs text-muted-foreground">
+                {notificationData.message.length}/1000 caractères
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setNotificationDialogOpen(false)
+                setClientToNotify(null)
+                setNotificationData({ title: '', message: '', type: 'INFO' })
+              }}
+              className="w-full sm:w-auto"
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={handleSendNotification}
+              disabled={isLoading || !notificationData.title || !notificationData.message}
+              className="gradient-primary w-full sm:w-auto"
+            >
+              <Bell className="h-4 w-4 mr-2" />
+              {isLoading ? 'Envoi...' : 'Envoyer la notification'}
             </Button>
           </DialogFooter>
         </DialogContent>
