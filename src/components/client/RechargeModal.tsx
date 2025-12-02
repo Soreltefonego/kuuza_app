@@ -155,7 +155,7 @@ export function RechargeModal({ isOpen, onClose, currentBalance }: RechargeModal
                           className="text-xl font-bold bg-gray-900 border-gray-800 pr-16"
                         />
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
-                          XAF
+                          USD
                         </span>
                       </div>
                     </div>
@@ -170,7 +170,7 @@ export function RechargeModal({ isOpen, onClose, currentBalance }: RechargeModal
                           onClick={() => setAmount(quickAmount.toString())}
                           className="border-gray-700 hover:bg-gray-800"
                         >
-                          {formatCurrency(quickAmount).replace(' XAF', '')}
+                          {formatCurrency(quickAmount).replace('$', '')}
                         </Button>
                       ))}
                     </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useTheme } from 'next-themes'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -28,6 +29,7 @@ import {
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { signOut } from 'next-auth/react'
 import { toast } from 'react-hot-toast'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { TransferModal } from './TransferModal'
 import { RechargeModal } from './RechargeModal'
 import { ActivityView } from './ActivityView'
@@ -41,6 +43,7 @@ interface ClientDashboardProps {
 }
 
 export function ClientDashboard({ client, transactions, balance }: ClientDashboardProps) {
+  const { theme } = useTheme()
   const [showBalance, setShowBalance] = useState(true)
   const [copied, setCopied] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -92,6 +95,7 @@ export function ClientDashboard({ client, transactions, balance }: ClientDashboa
             >
               <Bell className="h-5 w-5" />
             </Button>
+            <ThemeToggle />
             <Button
               variant="ghost"
               size="icon"
@@ -307,7 +311,7 @@ export function ClientDashboard({ client, transactions, balance }: ClientDashboa
                         <ArrowUpRight className="h-3 w-3 lg:h-4 lg:w-4 text-red-500" />
                         <span className="text-xs text-gray-300">Ce mois</span>
                       </div>
-                      <p className="text-lg lg:text-2xl font-bold text-white">0 XAF</p>
+                      <p className="text-lg lg:text-2xl font-bold text-white">{formatCurrency(0)}</p>
                       <p className="text-xs text-gray-300">Dépenses</p>
                     </CardContent>
                   </Card>
@@ -324,7 +328,7 @@ export function ClientDashboard({ client, transactions, balance }: ClientDashboa
                         <ArrowDownLeft className="h-3 w-3 lg:h-4 lg:w-4 text-green-500" />
                         <span className="text-xs text-gray-300">Ce mois</span>
                       </div>
-                      <p className="text-lg lg:text-2xl font-bold text-white">0 XAF</p>
+                      <p className="text-lg lg:text-2xl font-bold text-white">{formatCurrency(0)}</p>
                       <p className="text-xs text-gray-300">Revenus</p>
                     </CardContent>
                   </Card>
@@ -341,7 +345,7 @@ export function ClientDashboard({ client, transactions, balance }: ClientDashboa
                         <TrendingUp className="h-3 w-3 lg:h-4 lg:w-4 text-blue-500" />
                         <span className="text-xs text-gray-300">Épargne</span>
                       </div>
-                      <p className="text-lg lg:text-2xl font-bold text-white">0 XAF</p>
+                      <p className="text-lg lg:text-2xl font-bold text-white">{formatCurrency(0)}</p>
                       <p className="text-xs text-gray-300">Objectifs</p>
                     </CardContent>
                   </Card>

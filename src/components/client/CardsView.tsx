@@ -21,6 +21,7 @@ import {
   Shield
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import { formatCurrency } from '@/lib/utils'
 
 interface CardsViewProps {
   client: any
@@ -178,7 +179,7 @@ export function CardsView({ client }: CardsViewProps) {
                 <div className="flex justify-between items-center mb-3 lg:mb-4">
                   <div>
                     <p className="text-xs lg:text-sm text-gray-300">Plafond disponible</p>
-                    <p className="text-lg lg:text-xl font-bold text-white">{card.balance.toLocaleString()} XAF</p>
+                    <p className="text-lg lg:text-xl font-bold text-white">{formatCurrency(card.balance)}</p>
                   </div>
                   <Button
                     variant="ghost"

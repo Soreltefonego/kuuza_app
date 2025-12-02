@@ -293,7 +293,7 @@ export function TransferModal({ isOpen, onClose, currentBalance }: TransferModal
                           className="text-2xl font-bold bg-gray-900 border-gray-800 pr-16"
                         />
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
-                          XAF
+                          USD
                         </span>
                       </div>
                       <p className="text-sm text-gray-500 mt-2">

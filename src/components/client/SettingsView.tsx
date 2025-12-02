@@ -415,10 +415,10 @@ export function SettingsView({ client }: SettingsViewProps) {
 
           <div>
             <Label className="text-white">Devise par défaut</Label>
-            <select className="mt-2 w-full p-2 bg-gray-900 border border-gray-800 rounded-lg text-white">
-              <option value="XAF">XAF - Franc CFA</option>
-              <option value="EUR">EUR - Euro</option>
+            <select className="mt-2 w-full p-2 bg-gray-900 border border-gray-800 rounded-lg text-white" defaultValue="USD">
               <option value="USD">USD - Dollar US</option>
+              <option value="EUR">EUR - Euro</option>
+              <option value="XAF">XAF - Franc CFA</option>
             </select>
           </div>
 
