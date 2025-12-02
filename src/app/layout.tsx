@@ -17,16 +17,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className="dark">
-      <body className={`${inter.className} antialiased bg-background`}>
+    <html lang="fr" suppressHydrationWarning>
+      <body className={`${inter.className} antialiased bg-background overflow-x-hidden`}>
         <Providers>
           <div className="gradient-mesh fixed inset-0 -z-10" />
-          {children}
+          <div className="min-h-screen overflow-x-hidden max-w-[100vw]">
+            {children}
+          </div>
           <Toaster
             position="top-right"
             richColors
             closeButton
-            theme="dark"
           />
         </Providers>
       </body>

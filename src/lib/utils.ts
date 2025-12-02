@@ -7,11 +7,11 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatCurrency(amount: bigint | number): string {
   const value = typeof amount === 'bigint' ? Number(amount) / 100 : amount / 100
-  return new Intl.NumberFormat('fr-FR', {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'XAF',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(value)
 }
 

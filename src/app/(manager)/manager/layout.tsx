@@ -35,7 +35,7 @@ export default async function ManagerLayout({
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen overflow-x-hidden">
       {/* Desktop Sidebar */}
       <div className="hidden md:block">
         <ManagerSidebar user={user} creditBalance={Number(creditBalance)} />
@@ -45,8 +45,8 @@ export default async function ManagerLayout({
       <MobileNav user={user} creditBalance={creditBalance} />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <div className="container mx-auto px-3 md:px-6 pt-4 md:pt-6 pb-20 md:pb-6">
+      <main className="flex-1 overflow-auto max-w-full">
+        <div className="container mx-auto px-3 md:px-6 pt-4 md:pt-6 pb-20 md:pb-6 max-w-full overflow-x-hidden">
           {children}
         </div>
       </main>

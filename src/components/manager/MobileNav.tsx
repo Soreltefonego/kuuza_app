@@ -45,7 +45,7 @@ export function MobileNav({ user, creditBalance = BigInt(0) }: MobileNavProps) {
   return (
     <>
       {/* Bottom Navigation Bar - Mobile Only */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-white/10">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-white/10 w-full max-w-[100vw] overflow-hidden">
         <div className="flex items-center justify-around py-1">
           {menuItems.map((item) => {
             const Icon = item.icon

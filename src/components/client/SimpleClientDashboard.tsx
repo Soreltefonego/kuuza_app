@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useTheme } from 'next-themes'
 import {
   AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -11,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { ThemeToggle } from '@/components/theme-toggle'
 import {
   ArrowUpRight,
   ArrowDownLeft,
@@ -43,7 +45,7 @@ import {
   Target,
   Download
 } from 'lucide-react'
-import { formatDate } from '@/lib/utils'
+import { formatDate, formatCurrency as formatCurrencyUtil } from '@/lib/utils'
 import { signOut } from 'next-auth/react'
 import { toast } from 'react-hot-toast'
 import { TransferModal } from './TransferModal'
@@ -56,8 +58,7 @@ interface SimpleClientDashboardProps {
 }
 
 export function SimpleClientDashboard({ client, transactions, balance }: SimpleClientDashboardProps) {
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark')
-  const [currency, setCurrency] = useState<'USD' | 'EUR' | 'GBP'>('USD')
+  const { theme } = useTheme()
   const [showBalance, setShowBalance] = useState(true)
   const [copied, setCopied] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -67,17 +68,6 @@ export function SimpleClientDashboard({ client, transactions, balance }: SimpleC
 
   const accountNumber = `KB${client.id.slice(-8).toUpperCase()}`
   const balanceAmount = Number(balance) / 100
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light'
-    setTheme(newTheme)
-    document.documentElement.classList.toggle('dark', newTheme === 'dark')
-  }
-
-  const formatCurrency = (amount: number) => {
-    const symbols = { USD: '$', EUR: '€', GBP: '£' }
-    return `${symbols[currency]}${amount.toFixed(2)}`
-  }
 
   const handleCopyAccount = () => {
     navigator.clipboard.writeText(accountNumber)
@@ -143,93 +133,35 @@ export function SimpleClientDashboard({ client, transactions, balance }: SimpleC
     { name: 'Autres', value: 10, color: '#8b5cf6' },
   ]
 
-  const currencyIcons = {
-    USD: DollarSign,
-    EUR: Euro,
-    GBP: PoundSterling
-  }
-
-  const CurrencyIcon = currencyIcons[currency]
-
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      theme === 'dark'
-        ? 'bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white'
-        : 'bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900'
-    }`}>
+    <div className="min-h-screen transition-colors duration-300 bg-gradient-to-br from-background via-background/95 to-background/90">
       {/* Top Navigation Bar */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl ${
-        theme === 'dark'
-          ? 'bg-black/60 border-b border-white/10'
-          : 'bg-white/80 border-b border-gray-200'
-      }`}>
+      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                theme === 'dark'
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-500'
-                  : 'bg-gradient-to-r from-blue-600 to-purple-600'
-              }`}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-500">
                 <span className="text-white font-bold text-lg">KB</span>
               </div>
               <div className="hidden sm:block">
-                <h1 className={`text-xl font-bold ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}>Kuuza Bank</h1>
-                <p className={`text-xs ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>Votre banque digitale</p>
+                <h1 className="text-xl font-bold text-foreground">Kuuza Bank</h1>
+                <p className="text-xs text-muted-foreground">Votre banque digitale</p>
               </div>
             </div>
 
             {/* Right Section */}
             <div className="flex items-center gap-3">
-              {/* Currency Selector */}
-              <div className="relative">
-                <select
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value as any)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-                    theme === 'dark'
-                      ? 'bg-gray-800 hover:bg-gray-700 text-gray-300'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  } border-none outline-none`}
-                >
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                  <option value="GBP">GBP</option>
-                </select>
-              </div>
-
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className={`p-2 rounded-lg transition-colors ${
-                  theme === 'dark'
-                    ? 'bg-gray-800 hover:bg-gray-700 text-yellow-400'
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                }`}
-              >
-                {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </button>
+              {/* Theme Selector */}
+              <ThemeToggle />
 
               {/* Profile */}
               <button
                 onClick={() => signOut({ callbackUrl: '/login' })}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  theme === 'dark'
-                    ? 'bg-gray-800 hover:bg-gray-700 text-gray-300'
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                }`}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors bg-secondary hover:bg-secondary/80"
               >
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className={`${
-                    theme === 'dark'
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-500'
-                      : 'bg-gradient-to-r from-blue-600 to-purple-600'
-                  } text-white text-sm`}>
+                  <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm">
                     {client.user.firstName[0]}{client.user.lastName[0]}
                   </AvatarFallback>
                 </Avatar>
@@ -260,7 +192,7 @@ export function SimpleClientDashboard({ client, transactions, balance }: SimpleC
                     <p className="text-white/80 text-sm font-medium">Solde disponible</p>
                     <div className="flex items-center gap-3 mt-2">
                       <h2 className="text-3xl sm:text-4xl font-bold text-white">
-                        {showBalance ? formatCurrency(balanceAmount) : '••••••'}
+                        {showBalance ? formatCurrencyUtil(balanceAmount) : '••••••'}
                       </h2>
                       <button
                         onClick={() => setShowBalance(!showBalance)}
@@ -307,7 +239,7 @@ export function SimpleClientDashboard({ client, transactions, balance }: SimpleC
 
                 <div className="hidden sm:block">
                   <div className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center">
-                    <CurrencyIcon className="h-12 w-12 text-white" />
+                    <DollarSign className="h-12 w-12 text-white" />
                   </div>
                 </div>
               </div>
@@ -330,7 +262,7 @@ export function SimpleClientDashboard({ client, transactions, balance }: SimpleC
                     <p className={`text-2xl font-bold ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
                     }`}>
-                      {formatCurrency(stats.totalIncome)}
+                      {formatCurrencyUtil(stats.totalIncome)}
                     </p>
                     <div className="flex items-center gap-1 mt-1">
                       <ArrowUp className="h-3 w-3 text-green-500" />
@@ -362,7 +294,7 @@ export function SimpleClientDashboard({ client, transactions, balance }: SimpleC
                     <p className={`text-2xl font-bold ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
                     }`}>
-                      {formatCurrency(stats.totalExpenses)}
+                      {formatCurrencyUtil(stats.totalExpenses)}
                     </p>
                     <div className="flex items-center gap-1 mt-1">
                       <ArrowDown className="h-3 w-3 text-red-500" />
@@ -425,11 +357,11 @@ export function SimpleClientDashboard({ client, transactions, balance }: SimpleC
                     <p className={`text-2xl font-bold ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
                     }`}>
-                      {formatCurrency(balanceAmount * 0.3)}
+                      {formatCurrencyUtil(balanceAmount * 0.3)}
                     </p>
                     <p className={`text-xs ${
                       theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
-                    }`}>Objectif: {formatCurrency(balanceAmount * 0.5)}</p>
+                    }`}>Objectif: {formatCurrencyUtil(balanceAmount * 0.5)}</p>
                   </div>
                   <div className={`p-3 rounded-lg ${
                     theme === 'dark' ? 'bg-purple-500/20' : 'bg-purple-50'
@@ -554,7 +486,7 @@ export function SimpleClientDashboard({ client, transactions, balance }: SimpleC
                           : theme === 'dark' ? 'text-white' : 'text-gray-900'
                       }`}>
                         {transaction.type === 'CREDIT' || transaction.toUserId === client.userId ? '+' : '-'}
-                        {formatCurrency(Number(transaction.amount) / 100)}
+                        {formatCurrencyUtil(Number(transaction.amount) / 100)}
                       </p>
                       <Badge variant={transaction.status === 'SUCCESS' ? 'default' : 'secondary'}
                         className={`text-[10px] ${

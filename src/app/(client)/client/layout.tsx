@@ -23,7 +23,9 @@ export default async function ClientLayout({
 
   return (
     <ClientProviders>
-      {children}
+      <div className="min-h-screen overflow-x-hidden max-w-[100vw]">
+        {children}
+      </div>
     </ClientProviders>
   )
 }
