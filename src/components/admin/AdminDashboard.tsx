@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { ThemeToggle } from '@/components/theme-toggle'
 import {
   Users,
   Building,
@@ -22,7 +23,9 @@ import {
   Download,
   RefreshCw,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  Menu,
+  X
 } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { signOut } from 'next-auth/react'
@@ -62,6 +65,7 @@ export function AdminDashboard({
   const [searchTerm, setSearchTerm] = useState('')
   const [showCreditModal, setShowCreditModal] = useState(false)
   const [selectedAccount, setSelectedAccount] = useState<any>(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const navItems = [
     { id: 'overview', label: 'Vue d\'ensemble', icon: BarChart3 },
@@ -81,28 +85,40 @@ export function AdminDashboard({
     window.location.reload()
   }
 
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId)
+    setMobileMenuOpen(false)
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10">
-        <div className="container mx-auto px-6 py-4">
+      <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border">
+        <div className="container mx-auto px-4 md:px-6 py-3 md:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="p-2 rounded-xl bg-gradient-to-r from-red-500 to-orange-500">
-                <Shield className="h-6 w-6 text-white" />
+            <div className="flex items-center gap-2 md:gap-4">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 rounded-lg hover:bg-muted"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+              <div className="p-1.5 md:p-2 rounded-xl bg-gradient-to-r from-red-500 to-orange-500">
+                <Shield className="h-4 w-4 md:h-6 md:w-6 text-white" />
               </div>
-              <div>
-                <h1 className="text-xl font-bold">Super Admin Dashboard</h1>
-                <p className="text-xs text-gray-400">Kuuza Bank - Contrôle Total</p>
+              <div className="hidden sm:block">
+                <h1 className="text-base md:text-xl font-bold">Super Admin</h1>
+                <p className="text-xs text-muted-foreground">Kuuza Bank</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4">
+              <ThemeToggle />
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleRefreshData}
-                className="border-gray-700"
+                className="border-border hidden md:flex"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Actualiser
@@ -111,33 +127,43 @@ export function AdminDashboard({
                 variant="outline"
                 size="sm"
                 onClick={() => signOut({ callbackUrl: '/login' })}
-                className="border-red-900 text-red-400 hover:bg-red-900/20"
+                className="border-destructive/20 text-destructive hover:bg-destructive/10"
               >
-                <LogOut className="h-4 w-4 mr-2" />
-                Déconnexion
+                <LogOut className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">Déconnexion</span>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="flex pt-20">
+      <div className="flex pt-16 md:pt-20">
+        {/* Mobile Menu Overlay */}
+        {mobileMenuOpen && (
+          <div
+            className="md:hidden fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+
         {/* Sidebar Navigation */}
-        <aside className="fixed left-0 top-20 bottom-0 w-64 glass border-r border-white/10 p-6">
+        <aside className={`fixed left-0 top-16 md:top-20 bottom-0 w-64 bg-card border-r border-border p-4 md:p-6 z-50 transition-transform md:translate-x-0 ${
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        } md:block`}>
           <nav className="space-y-2">
             {navItems.map((item) => {
               const Icon = item.icon
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                  onClick={() => handleTabChange(item.id)}
+                  className={`w-full flex items-center gap-3 px-3 md:px-4 py-2 md:py-3 rounded-xl transition-all text-sm md:text-base ${
                     activeTab === item.id
                       ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-4 w-4 md:h-5 md:w-5" />
                   <span className="font-medium">{item.label}</span>
                 </button>
               )
@@ -145,17 +171,17 @@ export function AdminDashboard({
           </nav>
 
           {/* System Status */}
-          <div className="mt-8 p-4 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20">
+          <div className="mt-6 md:mt-8 p-3 md:p-4 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20">
             <div className="flex items-center gap-2 mb-2">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span className="text-sm font-medium text-green-500">Système Opérationnel</span>
+              <span className="text-xs md:text-sm font-medium text-green-500">Système OK</span>
             </div>
-            <p className="text-xs text-gray-400">Tous les services fonctionnent normalement</p>
+            <p className="text-xs text-muted-foreground">Services opérationnels</p>
           </div>
         </aside>
 
         {/* Main Content */}
-        <main className="ml-64 flex-1 p-8">
+        <main className="md:ml-64 flex-1 p-4 md:p-8 w-full overflow-x-hidden">
           {/* Overview Tab */}
           {activeTab === 'overview' && (
             <motion.div
@@ -164,16 +190,16 @@ export function AdminDashboard({
               className="space-y-6"
             >
               {/* Key Metrics */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card className="glass border-white/10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                <Card className="glass border-border">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-medium text-gray-400">Utilisateurs Total</CardTitle>
+                      <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Utilisateurs Total</CardTitle>
                       <Users className="h-4 w-4 text-blue-500" />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-3xl font-bold">{totalUsers}</p>
+                    <p className="text-2xl md:text-3xl font-bold">{totalUsers}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <Badge variant="default" className="bg-green-500/20 text-green-500">
                         +{totalBalances.todayNewUsers} aujourd'hui
@@ -182,45 +208,45 @@ export function AdminDashboard({
                   </CardContent>
                 </Card>
 
-                <Card className="glass border-white/10">
+                <Card className="glass border-border">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-medium text-gray-400">Managers</CardTitle>
+                      <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Managers</CardTitle>
                       <Building className="h-4 w-4 text-purple-500" />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-3xl font-bold">{totalManagers}</p>
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-2xl md:text-3xl font-bold">{totalManagers}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground mt-2">
                       Solde: {formatCurrency(totalBalances.managers)}
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card className="glass border-white/10">
+                <Card className="glass border-border">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-medium text-gray-400">Clients</CardTitle>
+                      <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Clients</CardTitle>
                       <Users className="h-4 w-4 text-cyan-500" />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-3xl font-bold">{totalClients}</p>
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-2xl md:text-3xl font-bold">{totalClients}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground mt-2">
                       Solde: {formatCurrency(totalBalances.clients)}
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card className="glass border-white/10">
+                <Card className="glass border-border">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-medium text-gray-400">Transactions</CardTitle>
+                      <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Transactions</CardTitle>
                       <Activity className="h-4 w-4 text-green-500" />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-3xl font-bold">{totalTransactions}</p>
+                    <p className="text-2xl md:text-3xl font-bold">{totalTransactions}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <Badge variant="default" className="bg-blue-500/20 text-blue-500">
                         +{totalBalances.todayTransactions} aujourd'hui
@@ -231,7 +257,7 @@ export function AdminDashboard({
               </div>
 
               {/* Financial Overview */}
-              <Card className="glass border-white/10">
+              <Card className="glass border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <DollarSign className="h-5 w-5 text-yellow-500" />
@@ -239,50 +265,50 @@ export function AdminDashboard({
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                     <div>
-                      <p className="text-sm text-gray-400 mb-1">Volume Total des Transactions</p>
-                      <p className="text-2xl font-bold text-gradient">
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Volume Total des Transactions</p>
+                      <p className="text-lg md:text-2xl font-bold text-gradient">
                         {formatCurrency(totalBalances.transactionVolume)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-400 mb-1">Solde Total Managers</p>
-                      <p className="text-2xl font-bold text-purple-400">
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Solde Total Managers</p>
+                      <p className="text-lg md:text-2xl font-bold text-purple-400">
                         {formatCurrency(totalBalances.managers)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-400 mb-1">Solde Total Clients</p>
-                      <p className="text-2xl font-bold text-cyan-400">
+                      <p className="text-xs md:text-sm text-muted-foreground mb-1">Solde Total Clients</p>
+                      <p className="text-lg md:text-2xl font-bold text-cyan-400">
                         {formatCurrency(totalBalances.clients)}
                       </p>
                     </div>
                   </div>
 
-                  <div className="mt-6 pt-6 border-t border-white/10">
-                    <p className="text-sm text-gray-400 mb-3">Actions Rapides</p>
-                    <div className="flex gap-3">
+                  <div className="mt-4 md:mt-6 pt-4 md:pt-6 border-t border-border">
+                    <p className="text-xs md:text-sm text-muted-foreground mb-3">Actions Rapides</p>
+                    <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
                       <Button
                         onClick={() => setActiveTab('managers')}
-                        className="gradient-primary"
+                        className="gradient-primary text-xs md:text-sm"
                       >
                         Gérer les Managers
                       </Button>
                       <Button
                         variant="outline"
                         onClick={() => setActiveTab('transactions')}
-                        className="border-gray-700"
+                        className="border-border text-xs md:text-sm"
                       >
                         Voir les Transactions
                       </Button>
                       <Button
                         variant="outline"
                         onClick={() => toast('Export en cours...')}
-                        className="border-gray-700"
+                        className="border-border text-xs md:text-sm"
                       >
                         <Download className="h-4 w-4 mr-2" />
-                        Exporter les Données
+                        Exporter
                       </Button>
                     </div>
                   </div>
@@ -290,7 +316,7 @@ export function AdminDashboard({
               </Card>
 
               {/* Recent Managers */}
-              <Card className="glass border-white/10">
+              <Card className="glass border-border">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle>Managers Récents</CardTitle>
@@ -308,19 +334,19 @@ export function AdminDashboard({
                     {managers.slice(0, 5).map((manager) => (
                       <div
                         key={manager.id}
-                        className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                        className="flex items-center justify-between p-2 md:p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                            <span className="text-sm font-bold">
+                          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                            <span className="text-xs md:text-sm font-bold">
                               {manager.user.firstName[0]}{manager.user.lastName[0]}
                             </span>
                           </div>
                           <div>
-                            <p className="font-medium">
+                            <p className="font-medium text-sm md:text-base">
                               {manager.user.firstName} {manager.user.lastName}
                             </p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-muted-foreground">
                               {manager.clients.length} clients • {formatCurrency(Number(manager.creditBalance))}
                             </p>
                           </div>
@@ -329,10 +355,10 @@ export function AdminDashboard({
                           size="sm"
                           variant="ghost"
                           onClick={() => handleDirectCredit(manager, 'manager')}
-                          className="text-green-400 hover:text-green-300"
+                          className="text-green-400 hover:text-green-300 text-xs md:text-sm"
                         >
                           <CreditCard className="h-4 w-4 mr-1" />
-                          Créditer
+                          <span className="hidden sm:inline">Créditer</span>
                         </Button>
                       </div>
                     ))}
@@ -341,7 +367,7 @@ export function AdminDashboard({
               </Card>
 
               {/* Recent Transactions */}
-              <Card className="glass border-white/10">
+              <Card className="glass border-border">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle>Transactions Récentes</CardTitle>
@@ -355,38 +381,38 @@ export function AdminDashboard({
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
+                  <div className="overflow-x-auto -mx-4 md:mx-0">
+                    <table className="w-full min-w-[600px] px-4 md:px-0">
                       <thead>
-                        <tr className="border-b border-white/10">
-                          <th className="text-left py-2 text-xs text-gray-400">De</th>
-                          <th className="text-left py-2 text-xs text-gray-400">Vers</th>
-                          <th className="text-left py-2 text-xs text-gray-400">Montant</th>
-                          <th className="text-left py-2 text-xs text-gray-400">Status</th>
-                          <th className="text-left py-2 text-xs text-gray-400">Date</th>
+                        <tr className="border-b border-border">
+                          <th className="text-left py-2 text-xs text-muted-foreground px-2 md:px-0">De</th>
+                          <th className="text-left py-2 text-xs text-muted-foreground px-2 md:px-0">Vers</th>
+                          <th className="text-left py-2 text-xs text-muted-foreground px-2 md:px-0">Montant</th>
+                          <th className="text-left py-2 text-xs text-muted-foreground px-2 md:px-0">Status</th>
+                          <th className="text-left py-2 text-xs text-muted-foreground px-2 md:px-0">Date</th>
                         </tr>
                       </thead>
                       <tbody>
                         {recentTransactions.slice(0, 10).map((transaction) => (
-                          <tr key={transaction.id} className="border-b border-white/5">
-                            <td className="py-2 text-sm">
+                          <tr key={transaction.id} className="border-b border-border">
+                            <td className="py-2 text-xs md:text-sm px-2 md:px-0">
                               {transaction.fromUser?.firstName || 'Système'} {transaction.fromUser?.lastName || ''}
                             </td>
-                            <td className="py-2 text-sm">
+                            <td className="py-2 text-xs md:text-sm px-2 md:px-0">
                               {transaction.toUser?.firstName || 'N/A'} {transaction.toUser?.lastName || ''}
                             </td>
-                            <td className="py-2 text-sm font-medium">
+                            <td className="py-2 text-xs md:text-sm font-medium px-2 md:px-0">
                               {formatCurrency(Number(transaction.amount))}
                             </td>
-                            <td className="py-2">
+                            <td className="py-2 px-2 md:px-0">
                               <Badge
                                 variant={transaction.status === 'SUCCESS' ? 'default' : 'secondary'}
-                                className={transaction.status === 'SUCCESS' ? 'bg-green-500/20 text-green-500' : ''}
+                                className={transaction.status === 'SUCCESS' ? 'bg-green-500/20 text-green-500 text-xs' : 'text-xs'}
                               >
                                 {transaction.status}
                               </Badge>
                             </td>
-                            <td className="py-2 text-sm text-gray-400">
+                            <td className="py-2 text-xs md:text-sm text-muted-foreground px-2 md:px-0">
                               {formatDate(transaction.createdAt)}
                             </td>
                           </tr>
