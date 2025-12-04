@@ -296,19 +296,17 @@ export class ChatService {
     })
   }
 
-  static async getConversation(conversationId: string, userId: string, userRole: 'CLIENT' | 'MANAGER'): Promise<ChatConversation | null> {
+  static async getConversation(conversationId: string, entityId: string, userRole: 'CLIENT' | 'MANAGER'): Promise<ChatConversation | null> {
     const whereClause = userRole === 'CLIENT'
       ? {
           id: conversationId,
-          client: {
-            userId
-          }
+          clientId: entityId
         }
       : {
           id: conversationId,
           OR: [
-            { managerId: userId },
-            { client: { managerId: userId } }
+            { managerId: entityId },
+            { client: { managerId: entityId } }
           ]
         }
 

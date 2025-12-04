@@ -84,8 +84,18 @@ export function ChatPanel({ managerId, managerName }: ChatPanelProps) {
     try {
       const response = await fetch(`/api/manager/chat/conversations?status=${activeTab.toUpperCase()}`)
       if (response.ok) {
-        const data = await response.json()
-        setConversations(data.conversations || [])
+        const result = await response.json()
+        // Transform API response to match component expectations
+        const formattedConversations = (result.data || []).map((conv: any) => ({
+          id: conv.id,
+          clientId: conv.client?.id || conv.clientId,
+          clientName: conv.client?.user ? `${conv.client.user.firstName} ${conv.client.user.lastName}` : 'Client',
+          lastMessage: conv.messages?.[0]?.content || 'Aucun message',
+          lastMessageTime: conv.messages?.[0]?.createdAt || conv.updatedAt,
+          unreadCount: conv._count?.messages || 0,
+          status: conv.status || 'ACTIVE'
+        }))
+        setConversations(formattedConversations)
       }
     } catch (error) {
       console.error('Error fetching conversations:', error)
@@ -141,8 +151,7 @@ export function ChatPanel({ managerId, managerName }: ChatPanelProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           conversationId: selectedConversation.id,
-          content: messageContent,
-          managerId
+          content: messageContent
         })
       })
 
@@ -216,9 +225,9 @@ export function ChatPanel({ managerId, managerName }: ChatPanelProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0 h-[calc(100%-5rem)]">
-        <div className="flex h-full">
+        <div className="flex h-full flex-col md:flex-row">
           {/* Conversations List */}
-          <div className="w-1/3 border-r border-border flex flex-col">
+          <div className="w-full md:w-1/3 border-b md:border-b-0 md:border-r border-border flex flex-col h-1/3 md:h-full">
             <div className="p-3 border-b border-border">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -232,7 +241,7 @@ export function ChatPanel({ managerId, managerName }: ChatPanelProps) {
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-              <TabsList className="grid w-full grid-cols-3 px-3">
+              <TabsList className="grid w-full grid-cols-3 px-2 md:px-3">
                 <TabsTrigger value="active">Actifs</TabsTrigger>
                 <TabsTrigger value="closed">Fermés</TabsTrigger>
                 <TabsTrigger value="archived">Archivés</TabsTrigger>
@@ -252,7 +261,7 @@ export function ChatPanel({ managerId, managerName }: ChatPanelProps) {
                           key={conversation.id}
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          className={`mb-2 p-3 rounded-lg cursor-pointer transition-colors ${
+                          className={`mb-2 p-2 md:p-3 rounded-lg cursor-pointer transition-colors ${
                             selectedConversation?.id === conversation.id
                               ? 'bg-blue-500/10 border border-blue-500/20'
                               : 'hover:bg-secondary'
@@ -294,7 +303,7 @@ export function ChatPanel({ managerId, managerName }: ChatPanelProps) {
           </div>
 
           {/* Chat Area */}
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col h-2/3 md:h-full">
             {selectedConversation ? (
               <>
                 {/* Chat Header */}

@@ -3,7 +3,24 @@ ALTER TABLE "Client"
 ADD COLUMN IF NOT EXISTS "isBlocked" BOOLEAN DEFAULT false,
 ADD COLUMN IF NOT EXISTS "blockedAt" TIMESTAMP(3),
 ADD COLUMN IF NOT EXISTS "blockedReason" TEXT,
-ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMP(3);
+ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMP(3),
+ADD COLUMN IF NOT EXISTS "accountNumber" TEXT;
+
+-- Créer un index unique sur accountNumber
+CREATE UNIQUE INDEX IF NOT EXISTS "Client_accountNumber_key" ON "Client"("accountNumber");
+
+-- Mettre à jour les clients existants avec des numéros de compte uniques
+WITH numbered_clients AS (
+    SELECT
+        id,
+        ROW_NUMBER() OVER (ORDER BY "createdAt") as row_num
+    FROM "Client"
+    WHERE "accountNumber" IS NULL
+)
+UPDATE "Client"
+SET "accountNumber" = 'ACC' || LPAD(CAST(nc.row_num AS TEXT), 8, '0')
+FROM numbered_clients nc
+WHERE "Client".id = nc.id;
 
 -- Ajouter les tables de chat si elles n'existent pas
 CREATE TABLE IF NOT EXISTS "ChatConversation" (
@@ -46,6 +63,7 @@ CREATE TABLE IF NOT EXISTS "Notification" (
     "isRead" BOOLEAN NOT NULL DEFAULT false,
     "readAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Notification_pkey" PRIMARY KEY ("id"),
     CONSTRAINT "Notification_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE CASCADE ON UPDATE CASCADE,

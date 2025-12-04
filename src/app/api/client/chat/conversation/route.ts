@@ -5,6 +5,7 @@ import { ChatService } from '@/services/chat.service'
 import { createConversationSchema } from '@/lib/validations'
 import { z } from 'zod'
 import { SessionUser } from '@/types'
+import { prisma } from '@/lib/prisma'
 
 // GET - Get or create conversation for client
 export async function GET(request: NextRequest) {
@@ -39,12 +40,40 @@ export async function GET(request: NextRequest) {
 
     // If no active conversation exists, create a new one
     if (!conversation) {
-      conversation = await ChatService.createConversation(user.clientId, 'Support général')
+      // Check if there was a previous closed conversation
+      const closedConversation = await prisma.chatConversation.findFirst({
+        where: {
+          clientId: user.clientId,
+          status: 'CLOSED'
+        },
+        orderBy: {
+          closedAt: 'desc'
+        }
+      })
+
+      // Create a new conversation
+      conversation = await ChatService.createConversation(
+        user.clientId,
+        closedConversation ? 'Nouvelle conversation' : 'Support général'
+      )
     }
+
+    // Serialize BigInt values to strings
+    const serializedConversation = conversation ? {
+      ...conversation,
+      client: (conversation as any).client ? {
+        ...(conversation as any).client,
+        accountBalance: (conversation as any).client.accountBalance?.toString()
+      } : null,
+      manager: (conversation as any).manager ? {
+        ...(conversation as any).manager,
+        creditBalance: (conversation as any).manager.creditBalance?.toString()
+      } : null
+    } : null
 
     return NextResponse.json({
       success: true,
-      data: conversation,
+      data: serializedConversation,
     })
   } catch (error) {
     console.error('Get conversation error:', error)

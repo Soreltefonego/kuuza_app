@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
     const message = await ChatService.sendMessage(
       data.conversationId,
-      user.id,
+      user.id,  // Use userId instead of clientId
       'CLIENT',
       data.content
     )

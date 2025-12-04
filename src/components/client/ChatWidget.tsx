@@ -32,6 +32,11 @@ interface Message {
   isRead: boolean
 }
 
+interface Conversation {
+  id: string
+  status: 'ACTIVE' | 'CLOSED' | 'ARCHIVED'
+}
+
 interface ChatWidgetProps {
   clientId: string
   clientName: string
@@ -45,6 +50,7 @@ export function ChatWidget({ clientId, clientName }: ChatWidgetProps) {
   const [newMessage, setNewMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
+  const [conversationStatus, setConversationStatus] = useState<'ACTIVE' | 'CLOSED' | 'ARCHIVED'>('ACTIVE')
   const [unreadCount, setUnreadCount] = useState(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -75,16 +81,24 @@ export function ChatWidget({ clientId, clientName }: ChatWidgetProps) {
   const loadOrCreateConversation = async () => {
     try {
       const response = await fetch('/api/client/chat/conversation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId })
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
       })
 
       if (response.ok) {
         const data = await response.json()
-        setConversationId(data.conversationId)
-        setMessages(data.messages || [])
-        markMessagesAsRead(data.conversationId)
+        setConversationId(data.data.id)
+        setConversationStatus(data.data.status || 'ACTIVE')
+
+        // Load messages for this conversation
+        if (data.data.id) {
+          await fetchMessages(data.data.id)
+          markMessagesAsRead(data.data.id)
+        }
+      } else {
+        const error = await response.json()
+        console.error('Error response:', error)
+        toast.error(error.error || t('chat.errorLoading'))
       }
     } catch (error) {
       console.error('Error loading conversation:', error)
@@ -92,11 +106,12 @@ export function ChatWidget({ clientId, clientName }: ChatWidgetProps) {
     }
   }
 
-  const fetchMessages = async () => {
-    if (!conversationId) return
+  const fetchMessages = async (convId?: string) => {
+    const targetConvId = convId || conversationId
+    if (!targetConvId) return
 
     try {
-      const response = await fetch(`/api/client/chat/messages?conversationId=${conversationId}`)
+      const response = await fetch(`/api/client/chat/messages?conversationId=${targetConvId}`)
       if (response.ok) {
         const data = await response.json()
         setMessages(data.messages || [])
@@ -156,11 +171,6 @@ export function ChatWidget({ clientId, clientName }: ChatWidgetProps) {
       if (response.ok) {
         // Fetch updated messages
         await fetchMessages()
-
-        // Auto-reply from system (simulating bank agent)
-        setTimeout(() => {
-          simulateBankAgentReply(messageContent)
-        }, 1500)
       } else {
         toast.error(t('chat.errorSending'))
         // Remove the optimistic message
@@ -177,43 +187,6 @@ export function ChatWidget({ clientId, clientName }: ChatWidgetProps) {
     }
   }
 
-  const simulateBankAgentReply = async (clientMessage: string) => {
-    const replies = {
-      fr: [
-        "Merci pour votre message. Un conseiller va vous répondre dans quelques instants.",
-        "Je vais transférer votre demande à un spécialiste.",
-        "Nous traitons votre demande. Veuillez patienter.",
-        "Un agent est en train d'examiner votre requête.",
-        "Merci de votre patience. Nous revenons vers vous rapidement."
-      ],
-      en: [
-        "Thank you for your message. An advisor will respond to you shortly.",
-        "I will transfer your request to a specialist.",
-        "We are processing your request. Please wait.",
-        "An agent is reviewing your request.",
-        "Thank you for your patience. We will get back to you soon."
-      ]
-    }
-
-    const randomReply = replies[i18n.language as 'fr' | 'en']?.[
-      Math.floor(Math.random() * replies[i18n.language as 'fr' | 'en']?.length)
-    ] || replies.en[0]
-
-    try {
-      await fetch('/api/client/chat/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          conversationId,
-          content: randomReply,
-          senderType: 'SYSTEM'
-        })
-      })
-      await fetchMessages()
-    } catch (error) {
-      console.error('Error sending system reply:', error)
-    }
-  }
 
   const formatMessageTime = (dateString: string) => {
     const date = new Date(dateString)
@@ -363,31 +336,51 @@ export function ChatWidget({ clientId, clientName }: ChatWidgetProps) {
                     </div>
                   </ScrollArea>
 
-                  {/* Input */}
+                  {/* Input or Status Message */}
                   <div className="p-4 border-t border-border">
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault()
-                        sendMessage()
-                      }}
-                      className="flex gap-2"
-                    >
-                      <Input
-                        ref={inputRef}
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder={t('chat.placeholder', 'Tapez votre message...')}
-                        disabled={isLoading}
-                        className="flex-1 bg-secondary"
-                      />
-                      <Button
-                        type="submit"
-                        disabled={isLoading || !newMessage.trim()}
-                        className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:opacity-90"
+                    {conversationStatus === 'CLOSED' ? (
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground mb-3">
+                          Cette conversation a été fermée
+                        </p>
+                        <Button
+                          onClick={() => {
+                            setConversationId(null)
+                            setMessages([])
+                            setConversationStatus('ACTIVE')
+                            loadOrCreateConversation()
+                          }}
+                          className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:opacity-90"
+                        >
+                          <MessageCircle className="h-4 w-4 mr-2" />
+                          Démarrer une nouvelle conversation
+                        </Button>
+                      </div>
+                    ) : (
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault()
+                          sendMessage()
+                        }}
+                        className="flex gap-2"
                       >
-                        <Send className="h-4 w-4" />
-                      </Button>
-                    </form>
+                        <Input
+                          ref={inputRef}
+                          value={newMessage}
+                          onChange={(e) => setNewMessage(e.target.value)}
+                          placeholder={t('chat.placeholder', 'Tapez votre message...')}
+                          disabled={isLoading}
+                          className="flex-1 bg-secondary"
+                        />
+                        <Button
+                          type="submit"
+                          disabled={isLoading || !newMessage.trim()}
+                          className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:opacity-90"
+                        >
+                          <Send className="h-4 w-4" />
+                        </Button>
+                      </form>
+                    )}
                   </div>
                 </>
               )}

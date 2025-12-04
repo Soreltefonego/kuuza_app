@@ -2,11 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { ChatService } from '@/services/chat.service'
-import { getMessagesSchema } from '@/lib/validations'
-import { z } from 'zod'
 import { SessionUser } from '@/types'
 
-// GET - Get messages for a conversation
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -27,35 +24,22 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    if (!user.clientId) {
-      return NextResponse.json(
-        { error: 'Client ID manquant' },
-        { status: 400 }
-      )
-    }
-
     const { searchParams } = new URL(request.url)
     const conversationId = searchParams.get('conversationId')
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '20')
+    const page = Number(searchParams.get('page')) || 1
+    const limit = Number(searchParams.get('limit')) || 50
 
     if (!conversationId) {
       return NextResponse.json(
-        { error: 'ID de conversation requis' },
+        { error: 'ID de conversation manquant' },
         { status: 400 }
       )
     }
 
-    const data = getMessagesSchema.parse({
-      conversationId,
-      page,
-      limit
-    })
-
     // Verify the conversation belongs to the client
     const conversation = await ChatService.getConversation(
-      data.conversationId,
-      user.clientId,
+      conversationId,
+      user.clientId!,
       'CLIENT'
     )
 
@@ -66,31 +50,19 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const result = await ChatService.getMessages(
-      data.conversationId,
-      data.page,
-      data.limit
-    )
+    const result = await ChatService.getMessages(conversationId, page, limit)
+
+    // Transform sender data to include name
+    const messagesWithSenderName = result.messages.map(msg => ({
+      ...msg,
+      senderName: msg.sender ? `${msg.sender.firstName} ${msg.sender.lastName}` : 'System'
+    }))
 
     return NextResponse.json({
-      success: true,
-      data: result,
+      messages: messagesWithSenderName,
+      pagination: result.pagination
     })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.issues[0].message },
-        { status: 400 }
-      )
-    }
-
-    if (error instanceof Error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      )
-    }
-
     console.error('Get messages error:', error)
     return NextResponse.json(
       { error: 'Une erreur est survenue' },

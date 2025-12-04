@@ -14,8 +14,13 @@ export default async function ChatPage() {
 
   const sessionUser = session.user as SessionUser
 
+  // Vérifier si c'est un manager
+  if (sessionUser.role !== 'MANAGER' || !sessionUser.managerId) {
+    redirect('/auth/login')
+  }
+
   const manager = await prisma.manager.findUnique({
-    where: { userId: sessionUser.id },
+    where: { id: sessionUser.managerId },
     include: {
       user: true
     }

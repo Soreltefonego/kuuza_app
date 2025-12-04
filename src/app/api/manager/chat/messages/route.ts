@@ -72,9 +72,16 @@ export async function GET(request: NextRequest) {
       data.limit
     )
 
+    // Transform sender data to include name
+    const messagesWithSenderName = result.messages.map((msg: any) => ({
+      ...msg,
+      senderName: msg.sender ? `${msg.sender.firstName} ${msg.sender.lastName}` : 'System'
+    }))
+
     return NextResponse.json({
       success: true,
-      data: result,
+      messages: messagesWithSenderName,
+      pagination: result.pagination
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
