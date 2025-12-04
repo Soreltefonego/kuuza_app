@@ -8,6 +8,8 @@ import { SessionUser } from '@/types'
 const creditClientSchema = z.object({
   clientId: z.string().min(1, 'Client ID requis'),
   amount: z.number().positive('Le montant doit être positif'),
+  senderName: z.string().optional(),
+  description: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -52,8 +54,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Client crédité avec succès! Nouveau solde: ${newBalance} XAF`,
+      message: `Client crédité avec succès! Nouveau solde: ${newBalance} USD`,
       data: serializedResult,
+      transaction: serializedResult.transaction,
       newBalance: newBalance
     })
 

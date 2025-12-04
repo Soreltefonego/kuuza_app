@@ -132,7 +132,7 @@ export function CreditsPageContent({ currentBalance, managerId }: CreditsPageCon
               <TabsList className="grid w-full grid-cols-2 mb-3 md:mb-6">
                 <TabsTrigger value="orange-money" className="text-xs md:text-sm">
                   <Smartphone className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                  Orange Money
+                  Vipps
                 </TabsTrigger>
                 <TabsTrigger value="mtn-money" disabled className="text-xs md:text-sm">
                   <Smartphone className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
@@ -160,11 +160,11 @@ export function CreditsPageContent({ currentBalance, managerId }: CreditsPageCon
 
                 {/* Phone Number */}
                 <div className="space-y-1.5 md:space-y-2">
-                  <Label htmlFor="phone" className="text-xs md:text-sm">Numéro Orange Money</Label>
+                  <Label htmlFor="phone" className="text-xs md:text-sm">Numéro Vipps</Label>
                   <Input
                     id="phone"
                     type="tel"
-                    placeholder="+237 6XX XXX XXX"
+                    placeholder="+47 9XX XX XXX"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     className="glass h-9 md:h-10"
@@ -184,7 +184,7 @@ export function CreditsPageContent({ currentBalance, managerId }: CreditsPageCon
                         </li>
                         <li className="flex items-start gap-1.5 md:gap-2">
                           <CheckCircle2 className="h-2.5 w-2.5 md:h-3 md:w-3 text-green-400 mt-0.5 shrink-0" />
-                          <span>Confirmez avec votre numéro Orange Money</span>
+                          <span>Confirmez avec votre numéro Vipps</span>
                         </li>
                         <li className="flex items-start gap-1.5 md:gap-2">
                           <CheckCircle2 className="h-2.5 w-2.5 md:h-3 md:w-3 text-green-400 mt-0.5 shrink-0" />
@@ -265,7 +265,7 @@ export function CreditsPageContent({ currentBalance, managerId }: CreditsPageCon
                 <div>
                   <h4 className="text-xs md:text-sm font-medium mb-0.5 md:mb-1">Sécurisé</h4>
                   <p className="text-[10px] md:text-xs text-muted-foreground">
-                    Transactions sécurisées avec Orange Money
+                    Transactions sécurisées avec Vipps
                   </p>
                 </div>
               </div>

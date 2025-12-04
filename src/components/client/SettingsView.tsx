@@ -200,7 +200,7 @@ export function SettingsView({ client }: SettingsViewProps) {
                 value={profileData.phone}
                 onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                 disabled={!isEditingProfile}
-                placeholder="+237 6XX XXX XXX"
+                placeholder="+47 9XX XX XXX"
                 className="pl-10 bg-secondary border-border text-foreground placeholder:text-muted-foreground"
               />
             </div>

@@ -30,11 +30,14 @@ import { formatCurrency, formatDate } from '@/lib/utils'
 import { signOut } from 'next-auth/react'
 import { toast } from 'react-hot-toast'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { LanguageSwitcher } from '@/components/language-switcher'
 import { TransferModal } from './TransferModal'
 import { RechargeModal } from './RechargeModal'
 import { ActivityView } from './ActivityView'
 import { SettingsView } from './SettingsView'
 import { CardsView } from './CardsView'
+import { ChatWidget } from './ChatWidget'
+import { NotificationBell } from './NotificationBell'
 
 interface ClientDashboardProps {
   client: any
@@ -79,22 +82,8 @@ export function ClientDashboard({ client, transactions, balance }: ClientDashboa
             <span className="font-medium">Kuuza Bank</span>
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground"
-              onClick={() => {
-                toast('Notifications bientôt disponibles', {
-                  icon: '🔔',
-                  style: {
-                    background: 'var(--background)',
-                    color: 'var(--foreground)',
-                  },
-                })
-              }}
-            >
-              <Bell className="h-5 w-5" />
-            </Button>
+            <NotificationBell />
+            <LanguageSwitcher />
             <ThemeToggle />
             <Button
               variant="ghost"
@@ -111,13 +100,19 @@ export function ClientDashboard({ client, transactions, balance }: ClientDashboa
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 bg-background border-r border-border flex-col">
         <div className="p-6">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-              <span className="text-primary-foreground font-bold">KB</span>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                <span className="text-primary-foreground font-bold">KB</span>
+              </div>
+              <div>
+                <h1 className="font-semibold text-foreground">Kuuza Bank</h1>
+                <p className="text-xs text-muted-foreground">Banking moderne</p>
+              </div>
             </div>
-            <div>
-              <h1 className="font-semibold text-foreground">Kuuza Bank</h1>
-              <p className="text-xs text-muted-foreground">Banking moderne</p>
+            <div className="flex items-center gap-2">
+              <NotificationBell inSidebar={true} />
+              <ThemeToggle />
             </div>
           </div>
 
@@ -526,6 +521,12 @@ export function ClientDashboard({ client, transactions, balance }: ClientDashboa
           })}
         </div>
       </nav>
+
+      {/* Chat Widget */}
+      <ChatWidget
+        clientId={client.id}
+        clientName={`${client.user.firstName} ${client.user.lastName}`}
+      />
     </div>
   )
 }

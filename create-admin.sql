@@ -16,7 +16,7 @@ INSERT INTO "User" (
   '$2a$10$YourHashedPasswordHere', -- Remplacez par le hash du mot de passe
   'Super',
   'Admin',
-  '+237600000000',
+  '+4790000000',
   'ADMIN',
   true,
   NOW(),

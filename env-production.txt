@@ -1,0 +1,15 @@
+# Database - Supabase Connection pour Prisma
+# Connection poolée pour les requêtes (Transaction pooling)
+DATABASE_URL="postgresql://postgres.guhbyjuvjuhtviplomvs:@Raissa23Abidine@aws-1-eu-north-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
+
+# Connection directe pour les migrations (Session pooling)
+DIRECT_URL="postgresql://postgres.guhbyjuvjuhtviplomvs:@Raissa23Abidine@db.guhbyjuvjuhtviplomvs.supabase.co:5432/postgres"
+
+# NextAuth - Changer l'URL en production
+NEXTAUTH_URL="https://kuuza-app.vercel.app"
+NEXTAUTH_SECRET="ciut3pHxKZhaWGEJtlFMCjN6xdtSDsG68fvvOPvMI+Q="
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL="https://guhbyjuvjuhtviplomvs.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1aGJ5anV2anVodHZpcGxvbXZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxMzM0ODcsImV4cCI6MjA3ODcwOTQ4N30.waHj1ykE5O0e6gVeBTzEx9OOcMSmfUHDnwKMyEoCWK8"
+SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1aGJ5anV2anVodHZpcGxvbXZzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzEzMzQ4NywiZXhwIjoyMDc4NzA5NDg3fQ.7AN4hKXvZ_w6-CXlIYiLrFofDUMsqPfCgWe0lzlpNEA"

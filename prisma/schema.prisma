@@ -49,6 +49,7 @@ model User {
 
   sentTransactions     Transaction[] @relation("FromUser")
   receivedTransactions Transaction[] @relation("ToUser")
+  chatMessages        ChatMessage[]
 
   @@index([email])
   @@index([role])
@@ -64,6 +65,8 @@ model Manager {
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   clients         Client[]
   payments        OrangeMoneyPayment[]
+  conversations   ChatConversation[]
+  notifications   Notification[]
 
   @@index([userId])
 }
@@ -76,11 +79,18 @@ model Client {
   activationToken String?   @unique
   isActivated     Boolean   @default(false)
   activatedAt     DateTime?
+  isBlocked       Boolean   @default(false)
+  blockedAt       DateTime?
+  blockedReason   String?
+  deletedAt       DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   manager         Manager   @relation(fields: [managerId], references: [id], onDelete: Cascade)
+  accountNumber   String?   @unique
+  conversations   ChatConversation[]
+  notifications   Notification[]
 
   @@index([userId])
   @@index([managerId])
@@ -129,4 +139,63 @@ model OrangeMoneyPayment {
   @@index([managerId])
   @@index([transactionId])
   @@index([status])
+}
+
+model ChatConversation {
+  id              String        @id @default(cuid())
+  clientId        String
+  managerId       String?
+  status          String        @default("ACTIVE") // ACTIVE, CLOSED, ARCHIVED
+  subject         String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  closedAt        DateTime?
+
+  client          Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  manager         Manager?      @relation(fields: [managerId], references: [id], onDelete: SetNull)
+  messages        ChatMessage[]
+
+  @@index([clientId])
+  @@index([managerId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+}
+
+model ChatMessage {
+  id              String        @id @default(cuid())
+  conversationId  String
+  senderId        String
+  senderType      String        // CLIENT, MANAGER, SYSTEM
+  content         String        @db.Text
+  isRead          Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now()) @updatedAt
+
+  conversation    ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender          User          @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([createdAt(sort: Desc)])
+}
+
+model Notification {
+  id              String        @id @default(cuid())
+  clientId        String
+  managerId       String
+  title           String
+  message         String        @db.Text
+  type            String        @default("INFO") // INFO, WARNING, SUCCESS, ERROR
+  isRead          Boolean       @default(false)
+  readAt          DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  client          Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  manager         Manager       @relation(fields: [managerId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([managerId])
+  @@index([isRead])
+  @@index([createdAt(sort: Desc)])
 }

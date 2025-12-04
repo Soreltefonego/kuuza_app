@@ -185,16 +185,19 @@ export class ManagerService {
         },
       })
 
-      // Create transaction record
+      // Create transaction record with metadata
       const transaction = await tx.transaction.create({
         data: {
           type: TransactionType.CREDIT,
           amount: amountInCents,
           fromUserId: manager.userId,
           toUserId: client.userId,
-          description: `Crédit de compte client`,
+          description: data.description || `Crédit de compte client`,
           status: TransactionStatus.SUCCESS,
           reference: generateTransactionReference(),
+          metadata: data.senderName ? {
+            senderName: data.senderName
+          } : undefined,
         },
       })
 
@@ -225,13 +228,13 @@ export class ManagerService {
           type: TransactionType.BUY_CREDIT,
           amount: amountInCents,
           toUserId: manager.userId,
-          description: `Achat de crédit via Orange Money`,
+          description: `Achat de crédit via Vipps`,
           status: TransactionStatus.SUCCESS,
           reference: generateTransactionReference(),
         },
       })
 
-      // Create Orange Money payment record
+      // Create Vipps payment record
       const payment = await tx.orangeMoneyPayment.create({
         data: {
           managerId,

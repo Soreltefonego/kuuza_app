@@ -43,6 +43,19 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Email ou mot de passe incorrect")
         }
 
+        // Vérifier si le client est bloqué ou supprimé
+        if (user.client) {
+          if (user.client.isBlocked) {
+            throw new Error("Votre compte a été bloqué. Contactez votre conseiller.")
+          }
+          if (user.client.deletedAt) {
+            throw new Error("Ce compte n'existe plus.")
+          }
+          if (!user.client.isActivated) {
+            throw new Error("Votre compte n'est pas encore activé. Veuillez utiliser le lien d'activation.")
+          }
+        }
+
         return {
           id: user.id,
           email: user.email,

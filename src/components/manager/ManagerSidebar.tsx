@@ -11,7 +11,8 @@ import {
   CreditCard,
   LogOut,
   Wallet,
-  TrendingUp
+  TrendingUp,
+  MessageCircle
 } from 'lucide-react'
 import { cn, formatCurrency } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,7 @@ const menuItems = [
   { href: '/manager/dashboard', icon: LayoutDashboard, label: 'Tableau de bord' },
   { href: '/manager/clients', icon: Users, label: 'Clients' },
   { href: '/manager/transactions', icon: History, label: 'Transactions' },
+  { href: '/manager/chat', icon: MessageCircle, label: 'Messages' },
   { href: '/manager/credits', icon: CreditCard, label: 'Acheter du crédit' },
 ]
 
